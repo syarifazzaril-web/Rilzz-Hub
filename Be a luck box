@@ -1,23 +1,23 @@
 --[[
-    Project: HaNz HUB
+    Project: Rilz HUB
     Credit: MasRilzz
 ]]
 
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
-   Name = "Be A LuckBox",
+   Name = "Be A Luck Box",
    LoadingTitle = "Loading...",
-   LoadingSubtitle = "by MasRilzz",
+   LoadingSubtitle = "by  MasRilzz",
    ConfigurationSaving = {
       Enabled = true,
-      FolderName = "RilzzHubConfig",
+      FolderName = "Config",
       FileName = "MainConfig"
    },
    KeySystem = false
 })
 
-local MainTab = Window:CreateTab("Main Features", 4483362458) -- Icon ID
+local MainTab = Window:CreateTab("Main Features", 4483362458)
 local UpgradeTab = Window:CreateTab("Upgrades", 4483362458)
 
 -- Variables for Toggles
@@ -37,6 +37,17 @@ local function parseNumber(str)
 end
 
 --- [ MAIN TAB ] ---
+
+-- Sekarang Goto Spawn ada di paling atas
+MainTab:CreateButton({
+   Name = "📍 Goto Spawn",
+   Callback = function()
+      local player = game:GetService("Players").LocalPlayer
+      if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+          player.Character.HumanoidRootPart.CFrame = CFrame.new(729.7592163085938, 38.71457290649414, -2125.068603515625)
+      end
+   end,
+})
 
 MainTab:CreateToggle({
    Name = "Auto Rebirth",
@@ -68,14 +79,6 @@ MainTab:CreateToggle({
    end,
 })
 
-MainTab:CreateButton({
-   Name = "Goto Spawn",
-   Callback = function()
-      local hrp = game:GetService("Players").LocalPlayer.Character:WaitForChild("HumanoidRootPart")
-      hrp.CFrame = CFrame.new(729.7592163085938, 38.71457290649414, -2125.068603515625)
-   end,
-})
-
 MainTab:CreateToggle({
    Name = "Auto Collect",
    CurrentValue = false,
@@ -95,7 +98,6 @@ UpgradeTab:CreateToggle({
    CurrentValue = false,
    Flag = "AutoUpgradeSpeed",
    Callback = function(Value)
-      -- Script ini biasanya butuh loadstring sekali, logic on/off diatur oleh library aslinya
       if Value then
           loadstring(game:HttpGet("https://raw.githubusercontent.com/syarifazzaril-web/Ex/refs/heads/main/Especially"))()
       end
@@ -112,7 +114,7 @@ UpgradeTab:CreateToggle({
           task.spawn(function()
               local Remote = game:GetService("ReplicatedStorage"):WaitForChild("Packages"):WaitForChild("_Index"):WaitForChild("sleitnick_knit@1.7.0"):WaitForChild("knit"):WaitForChild("Services"):WaitForChild("ContainerService"):WaitForChild("RF"):WaitForChild("UpgradeBrainrot")
               while _G.AutoUpgrade do
-                  pcall(function() Remote:InvokeServer("0.1") end)
+                  pcall(function() Remote:InvokeServer("1") end)
                   task.wait(0.05)
               end
           end)
@@ -130,7 +132,7 @@ UpgradeTab:CreateToggle({
           task.spawn(function()
               local BuyRemote = game:GetService("ReplicatedStorage"):WaitForChild("Packages"):WaitForChild("_Index"):WaitForChild("sleitnick_knit@1.7.0"):WaitForChild("knit"):WaitForChild("Services"):WaitForChild("ContainerService"):WaitForChild("RF"):WaitForChild("BuyContainer")
               while _G.AutoBuy do
-                  pcall(function() BuyRemote:InvokeServer(0.1) end)
+                  pcall(function() BuyRemote:InvokeServer(1) end)
                   task.wait(0.1)
               end
           end)
