@@ -1,30 +1,43 @@
+--[[
+    Project: HaNz HUB
+    Credit: MasRilzz
+]]
+
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
-   Name = "Rilzz HUB | Custom Script",
-   LoadingTitle = "Loading Interface...",
+   Name = "Be A LuckBox",
+   LoadingTitle = "Loading...",
    LoadingSubtitle = "by MasRilzz",
    ConfigurationSaving = {
       Enabled = true,
-      FolderName = "RilzHubConfig",
+      FolderName = "RilzzHubConfig",
       FileName = "MainConfig"
-   }
+   },
+   KeySystem = false
 })
 
--- Variables untuk Toggle
+local MainTab = Window:CreateTab("Main Features", 4483362458) -- Icon ID
+local UpgradeTab = Window:CreateTab("Upgrades", 4483362458)
+
+-- Variables for Toggles
 _G.AutoRebirth = false
-_G.AutoCollect = false
-_G.AutoSpeed = false
+_G.autocollect = false
 _G.AutoUpgrade = false
 _G.AutoBuy = false
 
--- [ TAB: MAIN ]
-local MainTab = Window:CreateTab("Main Features", 4483362458) -- Icon ID
+--- [ FUNCTIONS ] ---
 
--- Section: Automation
-MainTab:CreateSection("Autofarm & Upgrades")
+local function parseNumber(str)
+    str = str:gsub(",", ".")
+    local num, suffix = str:match("([%d%.]+)(%a*)")
+    num = tonumber(num) or 0
+    local suffixes = {K=1e3,M=1e6,B=1e9,T=1e12,Qa=1e15,Qi=1e18}
+    return num * (suffixes[suffix] or 1)
+end
 
--- 1. Auto Rebirth
+--- [ MAIN TAB ] ---
+
 MainTab:CreateToggle({
    Name = "Auto Rebirth",
    CurrentValue = false,
@@ -32,111 +45,95 @@ MainTab:CreateToggle({
    Callback = function(Value)
       _G.AutoRebirth = Value
       if Value then
-         task.spawn(function()
-            local player = game:GetService("Players").LocalPlayer
-            local knit = game:GetService("ReplicatedStorage").Packages._Index["sleitnick_knit@1.7.0"].knit
-            local RF = knit.Services.RebirthService.RF
-            
-            local function parseNumber(str)
-                str = str:gsub(",", ".")
-                local num, suffix = str:match("([%d%.]+)(%a*)")
-                num = tonumber(num) or 0
-                local suffixes = {K=1e3,M=1e6,B=1e9,T=1e12,Qa=1e15,Qi=1e18}
-                return num * (suffixes[suffix] or 1)
-            end
-
-            while _G.AutoRebirth do
-                local speedText = player.PlayerGui.Windows.Rebirth:FindFirstChild("SpeedText", true)
-                if speedText then
-                    local text = speedText.Text
-                    local current, required = text:match("Cash: (.+)/(.+)%$")
-                    if current and required then
-                        if parseNumber(current) >= parseNumber(required) then
-                            RF.Rebirth:InvokeServer()
-                        end
-                    end
-                end
-                task.wait(0.1)
-            end
-         end)
+          task.spawn(function()
+              local player = game:GetService("Players").LocalPlayer
+              local knit = game:GetService("ReplicatedStorage").Packages._Index["sleitnick_knit@1.7.0"].knit
+              local RF = knit.Services.RebirthService.RF
+              
+              while _G.AutoRebirth do
+                  local speedText = player.PlayerGui.Windows.Rebirth:FindFirstChild("SpeedText", true)
+                  if speedText then
+                      local text = speedText.Text
+                      local current, required = text:match("Cash: (.+)/(.+)%$")
+                      if current and required then
+                          if parseNumber(current) >= parseNumber(required) then
+                              RF.Rebirth:InvokeServer()
+                          end
+                      end
+                  end
+                  task.wait(0.1)
+              end
+          end)
       end
    end,
 })
 
--- 2. Auto Collect
+MainTab:CreateButton({
+   Name = "Goto Spawn",
+   Callback = function()
+      local hrp = game:GetService("Players").LocalPlayer.Character:WaitForChild("HumanoidRootPart")
+      hrp.CFrame = CFrame.new(729.7592163085938, 38.71457290649414, -2125.068603515625)
+   end,
+})
+
 MainTab:CreateToggle({
    Name = "Auto Collect",
    CurrentValue = false,
    Flag = "AutoCollect",
    Callback = function(Value)
-      _G.AutoCollect = Value
+      _G.autocollect = Value
       if Value then
-         -- Note: Script eksternal biasanya punya loop sendiri, pastikan script tsb bisa di-off-kan
-         loadstring(game:HttpGet("https://raw.githubusercontent.com/syarifazzaril-web/Bahancolect/refs/heads/main/Avgaga"))()
+          loadstring(game:HttpGet("https://raw.githubusercontent.com/syarifazzaril-web/Bahancolect/refs/heads/main/Avgaga"))()
       end
    end,
 })
 
--- 3. Auto Upgrade Speed
-MainTab:CreateToggle({
+--- [ UPGRADE TAB ] ---
+
+UpgradeTab:CreateToggle({
    Name = "Auto Upgrade Speed",
    CurrentValue = false,
-   Flag = "AutoSpeed",
+   Flag = "AutoUpgradeSpeed",
    Callback = function(Value)
-      _G.AutoSpeed = Value
+      -- Script ini biasanya butuh loadstring sekali, logic on/off diatur oleh library aslinya
       if Value then
-         loadstring(game:HttpGet("https://raw.githubusercontent.com/syarifazzaril-web/Ex/refs/heads/main/Especially"))()
+          loadstring(game:HttpGet("https://raw.githubusercontent.com/syarifazzaril-web/Ex/refs/heads/main/Especially"))()
       end
    end,
 })
 
--- 4. Auto Upgrade Brainrot
-MainTab:CreateToggle({
+UpgradeTab:CreateToggle({
    Name = "Auto Upgrade Brainrot",
    CurrentValue = false,
-   Flag = "AutoBrainrot",
+   Flag = "AutoUpgradeBrainrot",
    Callback = function(Value)
       _G.AutoUpgrade = Value
       if Value then
-         task.spawn(function()
-            local Remote = game:GetService("ReplicatedStorage"):WaitForChild("Packages"):WaitForChild("_Index"):WaitForChild("sleitnick_knit@1.7.0"):WaitForChild("knit"):WaitForChild("Services"):WaitForChild("ContainerService"):WaitForChild("RF"):WaitForChild("UpgradeBrainrot")
-            while _G.AutoUpgrade do
-                pcall(function() Remote:InvokeServer("1") end)
-                task.wait(0.05)
-            end
-         end)
+          task.spawn(function()
+              local Remote = game:GetService("ReplicatedStorage"):WaitForChild("Packages"):WaitForChild("_Index"):WaitForChild("sleitnick_knit@1.7.0"):WaitForChild("knit"):WaitForChild("Services"):WaitForChild("ContainerService"):WaitForChild("RF"):WaitForChild("UpgradeBrainrot")
+              while _G.AutoUpgrade do
+                  pcall(function() Remote:InvokeServer("0.1") end)
+                  task.wait(0.05)
+              end
+          end)
       end
    end,
 })
 
--- 5. Auto Upgrade Base
-MainTab:CreateToggle({
+UpgradeTab:CreateToggle({
    Name = "Auto Upgrade Base",
    CurrentValue = false,
-   Flag = "AutoBase",
+   Flag = "AutoUpgradeBase",
    Callback = function(Value)
       _G.AutoBuy = Value
       if Value then
-         task.spawn(function()
-            local BuyRemote = game:GetService("ReplicatedStorage"):WaitForChild("Packages"):WaitForChild("_Index"):WaitForChild("sleitnick_knit@1.7.0"):WaitForChild("knit"):WaitForChild("Services"):WaitForChild("ContainerService"):WaitForChild("RF"):WaitForChild("BuyContainer")
-            while _G.AutoBuy do
-                pcall(function() BuyRemote:InvokeServer(1) end)
-                task.wait(0.1)
-            end
-         end)
-      end
-   end,
-})
-
--- [ TAB: TELEPORT ]
-local TeleportTab = Window:CreateTab("Teleport", 4483362458)
-
-TeleportTab:CreateButton({
-   Name = "Goto Spawn",
-   Callback = function()
-      local player = game.Players.LocalPlayer
-      if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-         player.Character.HumanoidRootPart.CFrame = CFrame.new(729.7592, 38.7145, -2125.0686)
+          task.spawn(function()
+              local BuyRemote = game:GetService("ReplicatedStorage"):WaitForChild("Packages"):WaitForChild("_Index"):WaitForChild("sleitnick_knit@1.7.0"):WaitForChild("knit"):WaitForChild("Services"):WaitForChild("ContainerService"):WaitForChild("RF"):WaitForChild("BuyContainer")
+              while _G.AutoBuy do
+                  pcall(function() BuyRemote:InvokeServer(0.1) end)
+                  task.wait(0.1)
+              end
+          end)
       end
    end,
 })
