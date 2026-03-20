@@ -115,7 +115,7 @@ UpgradeTab:CreateToggle({
               local Remote = game:GetService("ReplicatedStorage"):WaitForChild("Packages"):WaitForChild("_Index"):WaitForChild("sleitnick_knit@1.7.0"):WaitForChild("knit"):WaitForChild("Services"):WaitForChild("ContainerService"):WaitForChild("RF"):WaitForChild("UpgradeBrainrot")
               while _G.AutoUpgrade do
                   pcall(function() Remote:InvokeServer("1") end)
-                  task.wait(0.05)
+                  task.wait(0.005)
               end
           end)
       end
