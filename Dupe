@@ -1,7 +1,7 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 -- // CONFIGURATION
-local CorrectKey = "RILZZVIP"
+local CorrectKey = "vip"
 local ExpiryDate = {year = 2026, month = 3, day = 23} 
 
 -- // FUNGSI CEK EXPIRED
