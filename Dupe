@@ -20,7 +20,7 @@ end
 
 -- // JENDELA UTAMA
 local Window = Rayfield:CreateWindow({
-   Name = "Dupeee nih | Rilzzhub",
+   Name = "Rilzzhub",
    LoadingTitle = "Authenticating...",
    ConfigurationSaving = {
       Enabled = true,
@@ -30,8 +30,8 @@ local Window = Rayfield:CreateWindow({
    KeySystem = true,
    KeySettings = {
       Title = "Key System | Rilzzhub",
-      Subtitle = "Silahkan masukkan key", -- Sudah tidak membocorkan key lagi
-      Note = "Hubungi owner untuk key", -- Note baru sesuai request
+      Subtitle = "Silahkan masukkan key",
+      Note = "Hubungi owner untuk key",
       FileName = "RilzzKey", 
       SaveKey = false, 
       GrabKeyFromSite = false,
@@ -42,6 +42,7 @@ local Window = Rayfield:CreateWindow({
 -- // VARIABLES
 local Player = game:GetService("Players").LocalPlayer
 local AutoFarmEnabled = false
+local AutoRebirthEnabled = false
 local DetectedPlot = nil
 
 -- // FUNCTION DETEKSI BASE
@@ -63,7 +64,9 @@ end
 local MainTab = Window:CreateTab("Main Farm", 4483362458)
 local SettingsTab = Window:CreateTab("Settings", 4483362458)
 
--- // MAIN FARM TOGGLE
+-- // FITUR DI TAB UTAMA (GABUNGAN)
+MainTab:CreateSection("Auto Farm & Dupe")
+
 MainTab:CreateToggle({
    Name = "Auto Dupe",
    CurrentValue = false,
@@ -84,6 +87,17 @@ MainTab:CreateToggle({
    end,
 })
 
+MainTab:CreateSection("Auto Rebirth")
+
+MainTab:CreateToggle({
+   Name = "Auto Rebirth ",
+   CurrentValue = false,
+   Flag = "RebirthToggle",
+   Callback = function(Value)
+      AutoRebirthEnabled = Value
+   end,
+})
+
 -- // SETTINGS
 SettingsTab:CreateButton({
    Name = "Force Rejoin",
@@ -99,7 +113,18 @@ Player.Idled:Connect(function()
     VirtualUser:ClickButton2(Vector2.new())
 end)
 
--- // LOGIC LOOP
+-- // LOGIC LOOP AUTO REBIRTH
+task.spawn(function()
+    local RebirthRemote = game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("DoRebirth")
+    while true do
+        if AutoRebirthEnabled then
+            RebirthRemote:FireServer()
+        end
+        task.wait(0.1)
+    end
+end)
+
+-- // LOGIC LOOP AUTO FARM / DUPE
 task.spawn(function()
     while true do
         if AutoFarmEnabled and DetectedPlot then
