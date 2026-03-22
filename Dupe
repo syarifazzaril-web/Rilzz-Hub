@@ -9,7 +9,6 @@ local function IsExpired()
     local now = os.date("!*t")
     local nowSeconds = os.time({year=now.year, month=now.month, day=now.day, hour=now.hour})
     local expirySeconds = os.time({year=ExpiryDate.year, month=ExpiryDate.month, day=ExpiryDate.day, hour=23, min=59})
-    
     return nowSeconds > expirySeconds
 end
 
@@ -22,11 +21,7 @@ end
 local Window = Rayfield:CreateWindow({
    Name = "Rilzzhub",
    LoadingTitle = "Authenticating...",
-   ConfigurationSaving = {
-      Enabled = true,
-      FolderName = "RilzzConfigs",
-      FileName = "DupeConfig"
-   },
+   ConfigurationSaving = {Enabled = true, FolderName = "RilzzConfigs", FileName = "DupeConfig"},
    KeySystem = true,
    KeySettings = {
       Title = "Key System | Rilzzhub",
@@ -39,13 +34,28 @@ local Window = Rayfield:CreateWindow({
    }
 })
 
--- // VARIABLES
-local Player = game:GetService("Players").LocalPlayer
+-- // VARIABLES & SERVICES
+local Players = game:GetService("Players")
+local Player = Players.LocalPlayer
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local remotes = ReplicatedStorage:WaitForChild("Remotes")
+
 local AutoFarmEnabled = false
 local AutoRebirthEnabled = false
+local AutoCollectEnabled = false -- Variabel baru untuk Auto Collect
 local DetectedPlot = nil
+local BASE_POS = Vector3.new(75.60234832763672, 6.67, 8.527978897094727)
 
--- // FUNCTION DETEKSI BASE
+-- Character Handler
+local char = Player.Character or Player.CharacterAdded:Wait()
+local hrp = char:WaitForChild("HumanoidRootPart")
+
+Player.CharacterAdded:Connect(function(newChar)
+    char = newChar
+    hrp = newChar:WaitForChild("HumanoidRootPart")
+end)
+
+-- // FUNCTIONS
 local function GetMyPlot()
     local Bases = workspace:FindFirstChild("Bases")
     if Bases then
@@ -60,37 +70,65 @@ local function GetMyPlot()
     return nil
 end
 
+local function teleportToBase()
+    if hrp then 
+        hrp.CFrame = CFrame.new(BASE_POS) 
+    end
+    task.wait(1)
+end
+
+local function collectSpecific(targetName)
+    local folder = workspace:FindFirstChild("Brainrots")
+    if not folder then return false end
+    
+    for _, brainrot in pairs(folder:GetChildren()) do
+        local brainrotName = brainrot:GetAttribute("BrainrotName")
+        if brainrotName and brainrotName:lower() == targetName:lower() then
+            local prompt = brainrot:FindFirstChildOfClass("ProximityPrompt") or brainrot:FindFirstChild("ProximityPrompt", true)
+            local part = brainrot.PrimaryPart or brainrot:FindFirstChildOfClass("BasePart")
+            if prompt and part and hrp then
+                hrp.CFrame = CFrame.new(part.Position + Vector3.new(0, 3, 0))
+                task.wait(0.3)
+                fireproximityprompt(prompt)
+                task.wait(0.5)
+                teleportToBase()
+                return true
+            end
+        end
+    end
+    return false
+end
+
 -- // TABS
 local MainTab = Window:CreateTab("Main Farm", 4483362458)
 local SettingsTab = Window:CreateTab("Settings", 4483362458)
 
--- // FITUR DI TAB UTAMA (GABUNGAN)
+-- // UI ELEMENTS
 MainTab:CreateSection("Auto Farm & Dupe")
-
 MainTab:CreateToggle({
    Name = "Auto Dupe",
    CurrentValue = false,
    Flag = "FarmToggle",
    Callback = function(Value)
       AutoFarmEnabled = Value
-      if Value then
-          DetectedPlot = GetMyPlot()
-          if not DetectedPlot then
-              Rayfield:Notify({
-                 Title = "Error",
-                 Content = "Plot belum di-claim!",
-                 Duration = 5,
-                 Image = 4483362458,
-              })
-          end
-      end
+      if Value then DetectedPlot = GetMyPlot() end
    end,
 })
 
-MainTab:CreateSection("Auto Rebirth")
-
+-- FITUR BARU: AUTO COLLECT
 MainTab:CreateToggle({
-   Name = "Auto Rebirth ",
+   Name = "Auto Collect Money",
+   CurrentValue = false,
+   Flag = "CollectToggle",
+   Callback = function(Value)
+      AutoCollectEnabled = Value
+      if Value then DetectedPlot = GetMyPlot() end
+   end,
+})
+
+MainTab:CreateSection("Auto Rebirth Custom")
+MainTab:CreateToggle({
+   Name = "Auto Rebirth (Smart)",
    CurrentValue = false,
    Flag = "RebirthToggle",
    Callback = function(Value)
@@ -98,7 +136,6 @@ MainTab:CreateToggle({
    end,
 })
 
--- // SETTINGS
 SettingsTab:CreateButton({
    Name = "Force Rejoin",
    Callback = function()
@@ -113,18 +150,67 @@ Player.Idled:Connect(function()
     VirtualUser:ClickButton2(Vector2.new())
 end)
 
--- // LOGIC LOOP AUTO REBIRTH
+-- // LOOP AUTO COLLECT MONEY
 task.spawn(function()
-    local RebirthRemote = game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("DoRebirth")
     while true do
-        if AutoRebirthEnabled then
-            RebirthRemote:FireServer()
+        if AutoCollectEnabled and hrp then
+            DetectedPlot = GetMyPlot()
+            if DetectedPlot then
+                local slots = DetectedPlot:FindFirstChild("Slots")
+                if slots then
+                    local oldPos = hrp.CFrame
+                    for _, slot in pairs(slots:GetChildren()) do
+                        if not AutoCollectEnabled then break end
+                        local collect = slot:FindFirstChild("Collect")
+                        if collect then
+                            hrp.CFrame = CFrame.new(collect.Position + Vector3.new(0, 3, 0))
+                            task.wait(0.3)
+                            local prompt = collect:FindFirstChildOfClass("ProximityPrompt") or collect:FindFirstChild("ProximityPrompt", true)
+                            if prompt then
+                                fireproximityprompt(prompt)
+                                task.wait(0.2)
+                            end
+                        end
+                    end
+                    hrp.CFrame = oldPos
+                end
+            end
+            task.wait(10) -- Jeda antar putaran sesuai request
         end
         task.wait(0.1)
     end
 end)
 
--- // LOGIC LOOP AUTO FARM / DUPE
+-- // LOOP AUTO REBIRTH
+task.spawn(function()
+    while true do
+        if AutoRebirthEnabled then
+            pcall(function()
+                local info = remotes:WaitForChild("GetRebirthInfo"):InvokeServer()
+                if info then
+                    if info.CurrentPower < info.RequiredPower then
+                        remotes:WaitForChild("BuyPower"):FireServer(10)
+                    end
+                    if info.CanRebirth then
+                        remotes:WaitForChild("DoRebirth"):FireServer()
+                        task.wait(2)
+                        char = Player.Character or Player.CharacterAdded:Wait()
+                        hrp = char:WaitForChild("HumanoidRootPart")
+                    elseif info.RequiredBrainrots then
+                        for _, req in pairs(info.RequiredBrainrots) do
+                            if not req.Has and AutoRebirthEnabled then
+                                collectSpecific(req.Name)
+                            end
+                        end
+                    end
+                end
+            end)
+        end
+        task.wait(0.5)
+    end
+end)
+
+-- // LOOP AUTO FARM / DUPE
 task.spawn(function()
     while true do
         if AutoFarmEnabled and DetectedPlot then
@@ -132,14 +218,11 @@ task.spawn(function()
             if slots then
                 for _, slot in pairs(slots:GetChildren()) do
                     if not AutoFarmEnabled then break end
-                    
                     local prompts = slot:FindFirstChild("PromptPart") and slot.PromptPart:FindFirstChild("Promts")
                     if prompts then
                         local place = prompts:FindFirstChild("Place")
                         if place then fireproximityprompt(place) end
-                        
                         task.wait(0.1)
-                        
                         local pickup = prompts:FindFirstChild("PickUp")
                         if pickup then fireproximityprompt(pickup) end
                     end
