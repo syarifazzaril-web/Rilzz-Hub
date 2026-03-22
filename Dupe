@@ -1,0 +1,130 @@
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+-- // CONFIGURATION
+local CorrectKey = "RILZZVIP"
+local ExpiryDate = {year = 2026, month = 3, day = 23} 
+
+-- // FUNGSI CEK EXPIRED
+local function IsExpired()
+    local now = os.date("!*t")
+    local nowSeconds = os.time({year=now.year, month=now.month, day=now.day, hour=now.hour})
+    local expirySeconds = os.time({year=ExpiryDate.year, month=ExpiryDate.month, day=ExpiryDate.day, hour=23, min=59})
+    
+    return nowSeconds > expirySeconds
+end
+
+if IsExpired() then
+    print("SCRIPT EXPIRED! Hubungi Owner.")
+    return 
+end
+
+-- // JENDELA UTAMA
+local Window = Rayfield:CreateWindow({
+   Name = "Dupeee nih | Rilzzhub",
+   LoadingTitle = "Authenticating...",
+   ConfigurationSaving = {
+      Enabled = true,
+      FolderName = "RilzzConfigs",
+      FileName = "DupeConfig"
+   },
+   KeySystem = true,
+   KeySettings = {
+      Title = "Key System | Rilzzhub",
+      Subtitle = "Silahkan masukkan key", -- Sudah tidak membocorkan key lagi
+      Note = "Hubungi owner untuk key", -- Note baru sesuai request
+      FileName = "RilzzKey", 
+      SaveKey = false, 
+      GrabKeyFromSite = false,
+      Key = {CorrectKey} 
+   }
+})
+
+-- // VARIABLES
+local Player = game:GetService("Players").LocalPlayer
+local AutoFarmEnabled = false
+local DetectedPlot = nil
+
+-- // FUNCTION DETEKSI BASE
+local function GetMyPlot()
+    local Bases = workspace:FindFirstChild("Bases")
+    if Bases then
+        for _, plot in pairs(Bases:GetChildren()) do
+            if plot:FindFirstChild("Owner") and plot.Owner.Value == Player.Name then
+                return plot
+            elseif plot:GetAttribute("Owner") == Player.UserId or plot:GetAttribute("Owner") == Player.Name then
+                return plot
+            end
+        end
+    end
+    return nil
+end
+
+-- // TABS
+local MainTab = Window:CreateTab("Main Farm", 4483362458)
+local SettingsTab = Window:CreateTab("Settings", 4483362458)
+
+-- // MAIN FARM TOGGLE
+MainTab:CreateToggle({
+   Name = "Auto Dupe",
+   CurrentValue = false,
+   Flag = "FarmToggle",
+   Callback = function(Value)
+      AutoFarmEnabled = Value
+      if Value then
+          DetectedPlot = GetMyPlot()
+          if not DetectedPlot then
+              Rayfield:Notify({
+                 Title = "Error",
+                 Content = "Plot belum di-claim!",
+                 Duration = 5,
+                 Image = 4483362458,
+              })
+          end
+      end
+   end,
+})
+
+-- // SETTINGS
+SettingsTab:CreateButton({
+   Name = "Force Rejoin",
+   Callback = function()
+      game:GetService("TeleportService"):Teleport(game.PlaceId, Player)
+   end,
+})
+
+-- // ANTI-AFK
+local VirtualUser = game:GetService("VirtualUser")
+Player.Idled:Connect(function()
+    VirtualUser:CaptureController()
+    VirtualUser:ClickButton2(Vector2.new())
+end)
+
+-- // LOGIC LOOP
+task.spawn(function()
+    while true do
+        if AutoFarmEnabled and DetectedPlot then
+            local slots = DetectedPlot:FindFirstChild("Slots")
+            if slots then
+                for _, slot in pairs(slots:GetChildren()) do
+                    if not AutoFarmEnabled then break end
+                    
+                    local prompts = slot:FindFirstChild("PromptPart") and slot.PromptPart:FindFirstChild("Promts")
+                    if prompts then
+                        local place = prompts:FindFirstChild("Place")
+                        if place then fireproximityprompt(place) end
+                        
+                        task.wait(0.1)
+                        
+                        local pickup = prompts:FindFirstChild("PickUp")
+                        if pickup then fireproximityprompt(pickup) end
+                    end
+                end
+            end
+        elseif AutoFarmEnabled and not DetectedPlot then
+            DetectedPlot = GetMyPlot()
+        end
+        task.wait(0.5)
+    end
+end)
+
+Rayfield:LoadConfiguration()
