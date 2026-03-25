@@ -1,0 +1,92 @@
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+local Window = Rayfield:CreateWindow({
+   Name = "Brax Ganteng",
+   LoadingTitle = " Loading...",
+   ConfigurationSaving = {
+      Enabled = false
+   }
+})
+
+-- TAB
+local MainTab = Window:CreateTab("Main", 4483362458)
+local CreditsTab = Window:CreateTab("Credits", 4483362458)
+
+-- STATE
+local DupeToggle = false
+local lastRun = 0
+
+-- TOGGLE
+MainTab:CreateToggle({
+   Name = "Dupe (All in One)",
+   CurrentValue = false,
+   Callback = function(Value)
+      DupeToggle = Value
+   end,
+})
+
+-- CREDITS
+CreditsTab:CreateParagraph({
+   Title = "RexHub Credits",
+   Content = "Script by: Rex\nUI Library: Rayfield"
+})
+
+-- LOOP
+task.spawn(function()
+    while true do
+        task.wait(0.3) -- loop cepat
+
+        if DupeToggle then
+
+            -- AUTO GRAB (CEPAT)
+            for _, v in pairs(workspace:GetDescendants()) do
+                if v:IsA("ProximityPrompt") then
+                    if v.Name == "GrabVehiclePrompt" and v.ActionText == "Grab" then
+                        fireproximityprompt(v)
+                    end
+                end
+            end
+
+            -- EQUIP SLOT 2 (CEPAT)
+            local player = game.Players.LocalPlayer
+            local backpack = player:FindFirstChild("Backpack")
+            local character = player.Character
+
+            if backpack and character and character:FindFirstChild("Humanoid") then
+                local tools = backpack:GetChildren()
+                if #tools >= 2 then
+                    character.Humanoid:EquipTool(tools[2])
+                end
+            end
+
+            -- DELAY 6.10 (AUTO PLACE + EQUIP BEST)
+            if tick() - lastRun >= 6.10 then
+                lastRun = tick()
+
+                -- AUTO PLACE
+                for _, v in pairs(workspace:GetDescendants()) do
+                    if v:IsA("ProximityPrompt") then
+                        if v.ObjectText == "Empty Stand" and v.ActionText == "Place" then
+                            fireproximityprompt(v)
+                        end
+                    end
+                end
+
+                -- EQUIP BEST
+                local args = {
+                    buffer.fromstring("\"\028\v\006Source\v\016SatchelEquipBest\000")
+                }
+
+                game:GetService("ReplicatedStorage")
+                    :WaitForChild("Modules")
+                    :WaitForChild("Packets")
+                    :WaitForChild("Packet")
+                    :WaitForChild("RemoteEvent")
+                    :FireServer(unpack(args))
+            end
+
+        end
+    end
+end)
+
+Rayfield:LoadConfiguration()
