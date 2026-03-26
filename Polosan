@@ -1,5 +1,5 @@
 -- Memuat Library Utama
-loadstring(game:HttpGet("https://raw.githubusercontent.com/syarifazzaril-web/Rilzz-Hub/refs/heads/main/Versi%20obfus"))()
+loadstring(game:HttpGet("https://raw.githubuyayasercontent.com/syarifazzaril-web/Rilzz-Hub/refs/heads/main/Versi%20obfus"))()
 task.wait(2)
 
 local lib = _G.RilzHub
@@ -15,3 +15,7 @@ lib:AddToggle(Brainrot.scroll, "Dupe", "Aktifkan fitur dupe", false, function(Va
         _G.DupeEnabled = false
     end
 end)
+
+
+
+ywwywyeywywywyywywwyywywywywywy
