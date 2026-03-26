@@ -1,5 +1,6 @@
 -- [[ Rilzz Hub ]] --
 -- Owner: Rilzzz
+-- Project: HaNz HUB
 
 loadstring(game:HttpGet("https://raw.githubusercontent.com/syarifazzaril-web/Rilzz-Hub/refs/heads/main/Versi%20obfus"))()
 task.wait(2)
@@ -8,24 +9,43 @@ local lib = _G.RilzHub
 local Brainrot = lib:AddTab("SHRINK FOR BRAINROT")
 local GetStrong = lib:AddTab("GET STRONG FOR BRAINROT")
 
--- Toggle SHRINK
-lib:AddToggle(Brainrot.scroll, "Dupe", "Dupe Shrink", false, function(v)
-    _G.DupeEnabled = v
-    if v then loadstring(game:HttpGet("https://raw.githubusercontent.com/syarifazzaril-web/Rilzz-Hub/refs/heads/main/Dupe%20Shrink"))() end
+-- ==========================================
+-- TAB 1: SHRINK FOR BRAINROT
+-- ==========================================
+lib:AddToggle(Brainrot.scroll, "Dupe", "Aktifkan fitur dupe", false, function(Value)
+    _G.DupeEnabled = Value
+    if Value then
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/syarifazzaril-web/Rilzz-Hub/refs/heads/main/Dupe%20Shrink"))()
+    end
 end)
 
--- Toggles GET STRONG
-lib:AddToggle(GetStrong.scroll, "Auto Rebirth", "Auto Rebirth", false, function(v)
-    _G.AutoRebirth = v
-    if v then loadstring(game:HttpGet("https://raw.githubusercontent.com/syarifazzaril-web/Polosan-/refs/heads/main/AUTO%20REBITH"))() end
+-- ==========================================
+-- TAB 2: GET STRONG FOR BRAINROT
+-- ==========================================
+lib:AddToggle(GetStrong.scroll, "Auto Rebirth", "Otomatis Rebirth", false, function(Value)
+    _G.AutoRebirth = Value
+    if Value then
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/syarifazzaril-web/Polosan-/refs/heads/main/AUTO%20REBITH"))()
+    end
 end)
 
-lib:AddToggle(GetStrong.scroll, "Auto Dupe", "Auto Dupe Strong", false, function(v)
-    _G.AutoDupeStrong = v
-    if v then loadstring(game:HttpGet("https://raw.githubusercontent.com/syarifazzaril-web/Polosan-/refs/heads/main/Auto%20Dupe"))() end
+lib:AddToggle(GetStrong.scroll, "Auto Dupe", "Otomatis Dupe Strong", false, function(Value)
+    _G.AutoDupeStrong = Value
+    if Value then
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/syarifazzaril-web/Polosan-/refs/heads/main/Auto%20Dupe"))()
+    end
 end)
 
-lib:AddToggle(GetStrong.scroll, "Auto Collect", "Auto Collect", false, function(v)
-    _G.AutoCollect = v
-    if v then loadstring(game:HttpGet("https://raw.githubusercontent.com/syarifazzaril-web/Polosan-/refs/heads/main/AUTO%20COLLECT"))() end
+lib:AddToggle(GetStrong.scroll, "Auto Collect", "Otomatis Ambil Item", false, function(Value)
+    _G.AutoCollect = Value
+    if Value then
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/syarifazzaril-web/Polosan-/refs/heads/main/AUTO%20COLLECT"))()
+    end
+end)
+
+-- Force Rejoin (Button sekali klik, desain seragam)
+lib:AddButton(GetStrong.scroll, "Force Rejoin", "Klik untuk masuk ulang server", function()
+    local TeleportService = game:GetService("TeleportService")
+    local Players = game:GetService("Players")
+    TeleportService:Teleport(game.PlaceId, Players.LocalPlayer)
 end)
