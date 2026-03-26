@@ -194,13 +194,3 @@ end
 end
 
 })
-
-
-Tab:CreateToggle({
-
-Name = "Bahan Bokep jule",
-CurrentValue = false,
-
-Callback = function(Value)
-
-
