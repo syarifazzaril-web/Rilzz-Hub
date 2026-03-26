@@ -21,8 +21,8 @@ local Tab = Window:CreateTab("Main",4483362458)
 -- BASE COORDS
 local bases = {
 
-Vector3.new(35.0893,10.0610,-27.3320),
-Vector3.new(86.1772,9.3153,-26.9118),
+Vector3.new(39.6971,6.5480,-29.1314),
+Vector3.new(94.8487,6.5480,-29.1314),
 Vector3.new(-117.7268,6.5480,-28.6801),
 Vector3.new(-67.5289,6.5480,-29.1314),
 Vector3.new(-12.9007,6.5480,-29.2923)
