@@ -1,21 +1,53 @@
+-- [[ Rilzz Hub ]] --
+-- Owner: Rilzzz
+-- Project: HaNz HUB
+
 -- Memuat Library Utama
-loadstring(game:HttpGet("https://raw.githubuyayasercontent.com/syarifazzaril-web/Rilzz-Hub/refs/heads/main/Versi%20obfus"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/syarifazzaril-web/Rilzz-Hub/refs/heads/main/Versi%20obfus"))()
 task.wait(2)
 
 local lib = _G.RilzHub
+
+-- ==========================================
+-- TAB 1: SHRINK FOR BRAINROT
+-- ==========================================
 local Brainrot = lib:AddTab("SHRINK FOR BRAINROT")
 
 lib:AddToggle(Brainrot.scroll, "Dupe", "Aktifkan fitur dupe", false, function(Value)
+    _G.DupeEnabled = Value
     if Value then
-        -- Set variabel ke true sebelum load script
-        _G.DupeEnabled = true
         loadstring(game:HttpGet("https://raw.githubusercontent.com/syarifazzaril-web/Rilzz-Hub/refs/heads/main/Dupe%20Shrink"))()
-    else
-        -- Matikan status loop di script GitHub tadi
-        _G.DupeEnabled = false
     end
 end)
 
+-- ==========================================
+-- TAB 2: GET STRONG FOR BRAINROT
+-- ==========================================
+local GetStrong = lib:AddTab("GET STRONG FOR BRAINROT")
 
+-- Toggle Auto Rebirth
+lib:AddToggle(GetStrong.scroll, "Auto Rebirth", "Otomatis Rebirth (Smart)", false, function(Value)
+    _G.AutoRebirth = Value
+    if Value then
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/syarifazzaril-web/Polosan-/refs/heads/main/AUTO%20REBITH"))()
+    end
+end)
 
-ywwywyeywywywyywywwyywywywywywy
+-- Toggle Auto Dupe
+lib:AddToggle(GetStrong.scroll, "Auto Dupe", "Otomatis Dupe Strong", false, function(Value)
+    _G.AutoDupeStrong = Value
+    if Value then
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/syarifazzaril-web/Polosan-/refs/heads/main/Auto%20Dupe"))()
+    end
+end)
+
+-- Toggle Auto Collect
+lib:AddToggle(GetStrong.scroll, "Auto Collect", "Otomatis Ambil Item Plot", false, function(Value)
+    _G.AutoCollect = Value
+    if Value then
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/syarifazzaril-web/Polosan-/refs/heads/main/AUTO%20COLLECT"))()
+    end
+end)
+
+-- Notifikasi
+print("Rilzz Hub - HaNz HUB Edition Loaded!")
