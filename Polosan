@@ -1,0 +1,17 @@
+-- Memuat Library Utama
+loadstring(game:HttpGet("https://raw.githubusercontent.com/syarifazzaril-web/Rilzz-Hub/refs/heads/main/Versi%20obfus"))()
+task.wait(2)
+
+local lib = _G.RilzHub
+local Brainrot = lib:AddTab("SHRINK FOR BRAINROT", "🧠")
+
+lib:AddToggle(Brainrot.scroll, "Dupe", "Aktifkan fitur dupe", false, function(Value)
+    if Value then
+        -- Set variabel ke true sebelum load script
+        _G.DupeEnabled = true
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/syarifazzaril-web/Rilzz-Hub/refs/heads/main/Dupe%20Shrink"))()
+    else
+        -- Matikan status loop di script GitHub tadi
+        _G.DupeEnabled = false
+    end
+end)
