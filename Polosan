@@ -3,7 +3,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/syarifazzaril-web/Ril
 task.wait(2)
 
 local lib = _G.RilzHub
-local Brainrot = lib:AddTab("SHRINK FOR BRAINROT", "🧠")
+local Brainrot = lib:AddTab("SHRINK FOR BRAINROT")
 
 lib:AddToggle(Brainrot.scroll, "Dupe", "Aktifkan fitur dupe", false, function(Value)
     if Value then
