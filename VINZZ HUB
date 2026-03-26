@@ -10,9 +10,9 @@ local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 
 local Window = Rayfield:CreateWindow({
-    Name = "BRAX GANTENG",
-    LoadingTitle = "LOADING",
-    LoadingSubtitle = "G DUPE G GACOR",
+    Name = "Vinz Hub",
+    LoadingTitle = "LOADING.",
+    LoadingSubtitle = "TUNGGU.",
     ConfigurationSaving = {Enabled = false}
 })
 
@@ -114,7 +114,7 @@ end
 
 Tab:CreateToggle({
 
-Name = "DUPEEEEEEEE",
+Name = "Dupe",
 CurrentValue = false,
 
 Callback = function(Value)
@@ -194,3 +194,13 @@ end
 end
 
 })
+
+
+Tab:CreateToggle({
+
+Name = "Bahan Bokep jule",
+CurrentValue = false,
+
+Callback = function(Value)
+
+
