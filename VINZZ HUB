@@ -1,0 +1,196 @@
+--// RILZ HUB BRAINROT LOOP FINAL
+
+pcall(function()
+    game.CoreGui:FindFirstChild("RILZ_HUB"):Destroy()
+end)
+
+local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+local Window = Rayfield:CreateWindow({
+    Name = "BRAX GANTENG",
+    LoadingTitle = "LOADING",
+    LoadingSubtitle = "G DUPE G GACOR",
+    ConfigurationSaving = {Enabled = false}
+})
+
+local Tab = Window:CreateTab("Main",4483362458)
+
+-- BASE COORDS
+local bases = {
+
+Vector3.new(39.6971,6.5480,-29.1314),
+Vector3.new(94.8487,6.5480,-29.1314),
+Vector3.new(-117.7268,6.5480,-28.6801),
+Vector3.new(-67.5289,6.5480,-29.1314),
+Vector3.new(-12.9007,6.5480,-29.2923)
+
+}
+
+local running = false
+local playerBase
+
+-- DETECT BASE
+local function DetectBase()
+
+    local root = player.Character:WaitForChild("HumanoidRootPart")
+
+    local closest
+    local dist = math.huge
+
+    for _,pos in pairs(bases) do
+        local d = (root.Position - pos).Magnitude
+        if d < dist then
+            dist = d
+            closest = pos
+        end
+    end
+
+    playerBase = closest
+
+end
+
+-- TELEPORT
+local function TP(pos)
+
+    local char = player.Character
+    if char and char:FindFirstChild("HumanoidRootPart") then
+        char.HumanoidRootPart.CFrame = CFrame.new(pos)
+    end
+
+end
+
+-- EQUIP SLOT 2
+local function EquipBar2()
+
+    local char = player.Character
+    local backpack = player:WaitForChild("Backpack")
+
+    local tools = {}
+
+    for _,v in pairs(backpack:GetChildren()) do
+        if v:IsA("Tool") then
+            table.insert(tools,v)
+        end
+    end
+
+    if tools[2] then
+        tools[2].Parent = char
+    end
+
+end
+
+-- AUTO PLACE
+local function AutoPlace()
+
+    local start = tick()
+
+    while tick() - start < 0.5 do
+
+        for _,v in pairs(workspace:GetDescendants()) do
+            if v:IsA("ProximityPrompt") then
+                fireproximityprompt(v)
+            end
+        end
+
+        task.wait(0.05)
+
+    end
+
+end
+
+-- PICKUP BRAINROT
+local function Pickup()
+
+    for _,v in pairs(workspace:GetDescendants()) do
+        if v:IsA("ProximityPrompt") then
+            fireproximityprompt(v)
+        end
+    end
+
+end
+
+Tab:CreateToggle({
+
+Name = "DUPEEEEEEEE",
+CurrentValue = false,
+
+Callback = function(Value)
+
+running = Value
+
+if Value then
+
+DetectBase()
+
+task.spawn(function()
+
+-- =====================
+-- PUTARAN 1
+-- =====================
+
+TP(playerBase)
+
+task.wait(0.3)
+
+EquipBar2()
+
+task.wait(0.2)
+
+local char = player.Character
+if char and char:FindFirstChild("Humanoid") then
+char.Humanoid.Health = 0
+end
+
+task.wait(0.2)
+
+AutoPlace()
+
+player.CharacterAdded:Wait()
+
+task.wait(0.6)
+
+-- =====================
+-- PUTARAN 2 (LOOP)
+-- =====================
+
+while running do
+
+TP(playerBase)
+
+task.wait(0.3)
+
+Pickup()
+
+task.wait(0.3)
+
+EquipBar2()
+
+task.wait(0.2)
+
+-- reset
+local char = player.Character
+if char and char:FindFirstChild("Humanoid") then
+char.Humanoid.Health = 0
+end
+
+-- delay kecil sebelum place
+task.wait(0.2)
+
+AutoPlace()
+
+player.CharacterAdded:Wait()
+
+task.wait(0.6)
+
+end
+
+end)
+
+end
+
+end
+
+})
