@@ -10,9 +10,9 @@ local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 
 local Window = Rayfield:CreateWindow({
-    Name = "Vinz Hub",
-    LoadingTitle = "LOADING.",
-    LoadingSubtitle = "TUNGGU.",
+    Name = "Vinz",
+    LoadingTitle = "LOADING",
+    LoadingSubtitle = "Tunggu",
     ConfigurationSaving = {Enabled = false}
 })
 
