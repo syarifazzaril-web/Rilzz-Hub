@@ -1,13 +1,15 @@
--- STATE
+-- STATUS AWAL
+_G.DupeEnabled = true
 local lastRun = 0
 
--- LOOP UTAMA
+-- LOOP UTAMA (Sekarang ngecek status toggle)
 task.spawn(function()
-    while true do
-        task.wait(0.3) -- Interval loop cepat
+    while _G.DupeEnabled do -- Script hanya jalan selama _G.DupeEnabled itu true
+        task.wait(0.3) 
 
         -- 1. AUTO GRAB (CEPAT)
         for _, v in pairs(workspace:GetDescendants()) do
+            if not _G.DupeEnabled then break end -- Cek lagi di tengah loop biar responsif
             if v:IsA("ProximityPrompt") then
                 if v.Name == "GrabVehiclePrompt" and v.ActionText == "Grab" then
                     fireproximityprompt(v)
@@ -20,20 +22,20 @@ task.spawn(function()
         local backpack = player:FindFirstChild("Backpack")
         local character = player.Character
 
-        if backpack and character and character:FindFirstChild("Humanoid") then
+        if _G.DupeEnabled and backpack and character and character:FindFirstChild("Humanoid") then
             local tools = backpack:GetChildren()
-            -- Memastikan ada item di slot 2
             if tools[2] then
                 character.Humanoid:EquipTool(tools[2])
             end
         end
 
         -- 3. DELAY 6.10 DETIK (AUTO PLACE + EQUIP BEST)
-        if tick() - lastRun >= 6.10 then
+        if _G.DupeEnabled and (tick() - lastRun >= 6.10) then
             lastRun = tick()
 
             -- AUTO PLACE
             for _, v in pairs(workspace:GetDescendants()) do
+                if not _G.DupeEnabled then break end
                 if v:IsA("ProximityPrompt") then
                     if v.ObjectText == "Empty Stand" and v.ActionText == "Place" then
                         fireproximityprompt(v)
@@ -42,19 +44,22 @@ task.spawn(function()
             end
 
             -- EQUIP BEST (REMOTE EVENT)
-            local args = {
-                buffer.fromstring("\"\028\v\006Source\v\016SatchelEquipBest\000")
-            }
+            if _G.DupeEnabled then
+                local args = {
+                    buffer.fromstring("\"\028\v\006Source\v\016SatchelEquipBest\000")
+                }
 
-            local packetRemote = game:GetService("ReplicatedStorage")
-                :WaitForChild("Modules")
-                :WaitForChild("Packets")
-                :WaitForChild("Packet")
-                :FindFirstChild("RemoteEvent")
+                local packetRemote = game:GetService("ReplicatedStorage")
+                    :WaitForChild("Modules")
+                    :WaitForChild("Packets")
+                    :WaitForChild("Packet")
+                    :FindFirstChild("RemoteEvent")
 
-            if packetRemote then
-                packetRemote:FireServer(unpack(args))
+                if packetRemote then
+                    packetRemote:FireServer(unpack(args))
+                end
             end
         end
     end
+    print("Dupe Script Berhasil Dimatikan")
 end)
