@@ -1,16 +1,20 @@
 repeat task.wait() until game:IsLoaded()
 
 pcall(function()
-    game.CoreGui:FindFirstChild("RILZ_HUB"):Destroy()
+    if game.CoreGui:FindFirstChild("Rayfield") then
+        game.CoreGui.Rayfield:Destroy()
+    end
 end)
 
 -- RAYFIELD
 local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
 
 local remote = game:GetService("ReplicatedStorage").Remotes.Plot.UpgradeNPC
+local RunService = game:GetService("RunService")
 local savedIDs = {}
 
 local Auto = false
+local SelectedMode = "Slow" -- Default mode
 
 -- WINDOW
 local Window = Rayfield:CreateWindow({
@@ -28,7 +32,18 @@ local MainTab = Window:CreateTab("Main", 4483362458)
 -- INFO
 MainTab:CreateParagraph({
     Title = "Credit Rilz",
-    Content = "JIKA MENGGUNAKAN LEVEL UPP ON FITURNYA TERUS UP MANUAL NANTI KE UP SENDIRI"
+    Content = "Pilih mode dulu baru nyalakan Level Upp. Jika sudah ON, upgrade manual sekali untuk memicu auto-up."
+})
+
+-- DROPDOWN SELECT MODE
+MainTab:CreateDropdown({
+    Name = "Pilih Mode Speed",
+    Options = {"Slow", "Ultra"},
+    CurrentOption = {"Slow"},
+    MultipleOptions = false,
+    Callback = function(Option)
+        SelectedMode = Option[1]
+    end,
 })
 
 -- TOGGLE
@@ -37,32 +52,57 @@ MainTab:CreateToggle({
     CurrentValue = false,
     Callback = function(Value)
         Auto = Value
+        if not Value then
+            table.clear(savedIDs) -- Reset ID saat dimatikan agar bisa dipicu lagi
+        end
     end
 })
 
--- HOOK REMOTE
+-- HOOK REMOTE (LOGIC)
 local old
-old = hookmetamethod(game,"__namecall",newcclosure(function(self,...)
-
+old = hookmetamethod(game, "__namecall", newcclosure(function(self, ...)
+    local method = getnamecallmethod()
     local args = {...}
 
-    if self == remote and getnamecallmethod() == "InvokeServer" and Auto then
-        
+    if self == remote and method == "InvokeServer" and Auto then
         local id = args[1]
 
         if id and not savedIDs[id] then
             savedIDs[id] = true
 
             task.spawn(function()
-                while Auto do
-                    remote:InvokeServer(id)
-                    task.wait(0)
+                if SelectedMode == "Slow" then
+                    -- MODE SLOW: Loop standar
+                    while Auto do
+                        remote:InvokeServer(id)
+                        task.wait(0)
+                    end
+                elseif SelectedMode == "Ultra" then
+                    -- MODE ULTRA: RunService + 100 Coroutines per Frame
+                    local connection
+                    connection = RunService.PostSimulation:Connect(function()
+                        if not Auto then 
+                            connection:Disconnect() 
+                            return 
+                        end
+                        
+                        for i = 1, 100 do 
+                            coroutine.wrap(function()
+                                remote:InvokeServer(id)
+                            end)()
+                        end
+                    end)
                 end
             end)
-
         end
-
     end
 
-    return old(self,...)
+    return old(self, ...)
 end))
+
+Rayfield:Notify({
+    Title = "RILZ HUB READY",
+    Content = "Skrip berhasil dimuat!",
+    Duration = 5,
+    Image = 4483362458,
+})
