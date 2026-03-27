@@ -1,4 +1,4 @@
---// RILZ HUB FULL (DUPE + AUTO SPEED + AUTO JUMP + AUTO REBIRTH)
+--// RILZ HUB FULL
 
 repeat task.wait() until game.Players.LocalPlayer.Character
 
@@ -45,10 +45,7 @@ _G.AutoRebirth = false
 local BuyRemote = ReplicatedStorage:WaitForChild("Events"):WaitForChild("PurchaseJump")
 local RebirthRemote = ReplicatedStorage:WaitForChild("Events"):WaitForChild("RequestRebirth")
 
--- =====================
 -- DETECT BASE
--- =====================
-
 local function DetectBase()
 
     local root = player.Character:WaitForChild("HumanoidRootPart")
@@ -68,23 +65,18 @@ local function DetectBase()
 
 end
 
--- =====================
 -- TELEPORT
--- =====================
-
 local function TP(pos)
 
     local char = player.Character
+
     if char and char:FindFirstChild("HumanoidRootPart") then
         char.HumanoidRootPart.CFrame = CFrame.new(pos)
     end
 
 end
 
--- =====================
 -- EQUIP SLOT 2
--- =====================
-
 local function EquipBar2()
 
     local char = player.Character
@@ -104,10 +96,7 @@ local function EquipBar2()
 
 end
 
--- =====================
 -- AUTO PLACE
--- =====================
-
 local function AutoPlace()
 
     local start = tick()
@@ -126,10 +115,7 @@ local function AutoPlace()
 
 end
 
--- =====================
 -- PICKUP
--- =====================
-
 local function Pickup()
 
     for _,v in pairs(workspace:GetDescendants()) do
@@ -235,31 +221,45 @@ end
 })
 
 -- =====================
--- AUTO REBIRTH
+-- AUTO REBIRTH (AUTO TABLE)
 -- =====================
 
-local RebirthRequirements = {
-[1] = 20,
-[2] = 25,
-[3] = 30,
-[4] = 35,
-[5] = 50
-}
+local function generateRebirthRequirements(maxLevel,startValue,step)
+
+local tbl = {}
+
+for i = 1,maxLevel do
+tbl[i] = startValue + (i-1)*step
+end
+
+return tbl
+
+end
+
+local RebirthRequirements = generateRebirthRequirements(200,20,5)
 
 local function getRebirthLevel()
-    local stats = player:FindFirstChild("leaderstats")
-    if stats and stats:FindFirstChild("Rebirth") then
-        return stats.Rebirth.Value
-    end
-    return 0
+
+local stats = player:FindFirstChild("leaderstats")
+
+if stats and stats:FindFirstChild("Rebirth") then
+return stats.Rebirth.Value
+end
+
+return 0
+
 end
 
 local function getPlayerSpeed()
-    local character = player.Character
-    if character and character:FindFirstChild("Humanoid") then
-        return character.Humanoid.WalkSpeed
-    end
-    return 0
+
+local character = player.Character
+
+if character and character:FindFirstChild("Humanoid") then
+return character.Humanoid.WalkSpeed
+end
+
+return 0
+
 end
 
 Tab:Toggle({
@@ -271,12 +271,12 @@ end
 })
 
 -- =====================
--- BUY + REBIRTH LOOP
+-- MAIN LOOP
 -- =====================
 
 task.spawn(function()
 
-while task.wait(0.03) do
+while task.wait(0.3) do
 
 if _G.BuySpeed then
 BuyRemote:FireServer("speed")
@@ -290,10 +290,17 @@ if _G.AutoRebirth then
 
 local currentRebirth = getRebirthLevel()
 local required = RebirthRequirements[currentRebirth + 1]
+
+if required then
+
 local speed = getPlayerSpeed()
 
-if required and speed >= required then
+if speed >= required then
 RebirthRemote:FireServer()
+end
+
+else
+task.wait(5)
 end
 
 end
