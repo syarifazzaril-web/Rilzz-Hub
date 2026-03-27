@@ -1,4 +1,6 @@
---// RILZ HUB BRAINROT LOOP FINAL (WINDUI FIX)
+--// RILZ HUB FULL (DUPE + AUTO SPEED + AUTO JUMP + AUTO REBIRTH)
+
+repeat task.wait() until game.Players.LocalPlayer.Character
 
 pcall(function()
     game.CoreGui:FindFirstChild("RILZ_HUB"):Destroy()
@@ -7,12 +9,14 @@ end)
 local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/latest/download/main.lua"))()
 
 local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
 local player = Players.LocalPlayer
 
 -- WINDOW
 local Window = WindUI:CreateWindow({
     Title = "BRAX GANTENG",
-    Size = UDim2.fromOffset(500,350),
+    Size = UDim2.fromOffset(500,350)
 })
 
 -- TAB
@@ -20,7 +24,7 @@ local Tab = Window:Tab({
     Title = "Main"
 })
 
--- BASE
+-- BASE COORDS
 local bases = {
 Vector3.new(39.6971,6.5480,-29.1314),
 Vector3.new(94.8487,6.5480,-29.1314),
@@ -32,7 +36,19 @@ Vector3.new(-12.9007,6.5480,-29.2923)
 local running = false
 local playerBase
 
+-- FLAGS
+_G.BuySpeed = false
+_G.Buyjump = false
+_G.AutoRebirth = false
+
+-- REMOTES
+local BuyRemote = ReplicatedStorage:WaitForChild("Events"):WaitForChild("PurchaseJump")
+local RebirthRemote = ReplicatedStorage:WaitForChild("Events"):WaitForChild("RequestRebirth")
+
+-- =====================
 -- DETECT BASE
+-- =====================
+
 local function DetectBase()
 
     local root = player.Character:WaitForChild("HumanoidRootPart")
@@ -52,15 +68,23 @@ local function DetectBase()
 
 end
 
--- TP
+-- =====================
+-- TELEPORT
+-- =====================
+
 local function TP(pos)
+
     local char = player.Character
     if char and char:FindFirstChild("HumanoidRootPart") then
         char.HumanoidRootPart.CFrame = CFrame.new(pos)
     end
+
 end
 
+-- =====================
 -- EQUIP SLOT 2
+-- =====================
+
 local function EquipBar2()
 
     local char = player.Character
@@ -80,23 +104,32 @@ local function EquipBar2()
 
 end
 
+-- =====================
 -- AUTO PLACE
+-- =====================
+
 local function AutoPlace()
 
     local start = tick()
 
     while tick() - start < 0.5 do
+
         for _,v in pairs(workspace:GetDescendants()) do
             if v:IsA("ProximityPrompt") then
                 fireproximityprompt(v)
             end
         end
+
         task.wait(0.05)
+
     end
 
 end
 
+-- =====================
 -- PICKUP
+-- =====================
+
 local function Pickup()
 
     for _,v in pairs(workspace:GetDescendants()) do
@@ -107,66 +140,164 @@ local function Pickup()
 
 end
 
--- TOGGLE
+-- =====================
+-- DUPE
+-- =====================
+
 Tab:Toggle({
-    Title = "DUPEEEEEEEE",
-    Default = false,
-    Callback = function(Value)
 
-        running = Value
+Title = "DUPEEEEEEEE",
+Default = false,
 
-        if Value then
+Callback = function(Value)
 
-            DetectBase()
+running = Value
 
-            task.spawn(function()
+if Value then
 
-                TP(playerBase)
-                task.wait(0.3)
+DetectBase()
 
-                EquipBar2()
-                task.wait(0.2)
+task.spawn(function()
 
-                local char = player.Character
-                if char and char:FindFirstChild("Humanoid") then
-                    char.Humanoid.Health = 0
-                end
+TP(playerBase)
+task.wait(0.3)
 
-                task.wait(0.2)
+EquipBar2()
+task.wait(0.2)
 
-                AutoPlace()
+local char = player.Character
+if char and char:FindFirstChild("Humanoid") then
+char.Humanoid.Health = 0
+end
 
-                player.CharacterAdded:Wait()
-                task.wait(0.6)
+task.wait(0.2)
 
-                while running do
+AutoPlace()
 
-                    TP(playerBase)
-                    task.wait(0.3)
+player.CharacterAdded:Wait()
+task.wait(0.6)
 
-                    Pickup()
-                    task.wait(0.3)
+while running do
 
-                    EquipBar2()
-                    task.wait(0.2)
+TP(playerBase)
+task.wait(0.3)
 
-                    local char = player.Character
-                    if char and char:FindFirstChild("Humanoid") then
-                        char.Humanoid.Health = 0
-                    end
+Pickup()
+task.wait(0.3)
 
-                    task.wait(0.2)
+EquipBar2()
+task.wait(0.2)
 
-                    AutoPlace()
+local char = player.Character
+if char and char:FindFirstChild("Humanoid") then
+char.Humanoid.Health = 0
+end
 
-                    player.CharacterAdded:Wait()
-                    task.wait(0.6)
+task.wait(0.2)
 
-                end
+AutoPlace()
 
-            end)
+player.CharacterAdded:Wait()
+task.wait(0.6)
 
-        end
+end
 
-    end
+end)
+
+end
+
+end
+
 })
+
+-- =====================
+-- AUTO BUY SPEED
+-- =====================
+
+Tab:Toggle({
+Title = "Auto Buy Speed",
+Default = false,
+Callback = function(Value)
+_G.BuySpeed = Value
+end
+})
+
+-- =====================
+-- AUTO BUY JUMP
+-- =====================
+
+Tab:Toggle({
+Title = "Auto Buy Jump",
+Default = false,
+Callback = function(Value)
+_G.Buyjump = Value
+end
+})
+
+-- =====================
+-- AUTO REBIRTH
+-- =====================
+
+local RebirthRequirements = {
+[1] = 20,
+[2] = 25,
+[3] = 30,
+[4] = 35,
+[5] = 40
+}
+
+local function getRebirthLevel()
+    local stats = player:FindFirstChild("leaderstats")
+    if stats and stats:FindFirstChild("Rebirth") then
+        return stats.Rebirth.Value
+    end
+    return 0
+end
+
+local function getPlayerSpeed()
+    local character = player.Character
+    if character and character:FindFirstChild("Humanoid") then
+        return character.Humanoid.WalkSpeed
+    end
+    return 0
+end
+
+Tab:Toggle({
+Title = "Auto Rebirth",
+Default = false,
+Callback = function(Value)
+_G.AutoRebirth = Value
+end
+})
+
+-- =====================
+-- BUY + REBIRTH LOOP
+-- =====================
+
+task.spawn(function()
+
+while task.wait(0.3) do
+
+if _G.BuySpeed then
+BuyRemote:FireServer("speed")
+end
+
+if _G.Buyjump then
+BuyRemote:FireServer("jump")
+end
+
+if _G.AutoRebirth then
+
+local currentRebirth = getRebirthLevel()
+local required = RebirthRequirements[currentRebirth + 1]
+local speed = getPlayerSpeed()
+
+if required and speed >= required then
+RebirthRemote:FireServer()
+end
+
+end
+
+end
+
+end)
