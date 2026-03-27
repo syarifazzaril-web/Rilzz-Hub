@@ -1,238 +1,75 @@
---// RILZ HUB FULL
-
-repeat task.wait() until game.Players.LocalPlayer.Character
+-- RILZ HUB ALL IN ONE
 
 pcall(function()
     game.CoreGui:FindFirstChild("RILZ_HUB"):Destroy()
 end)
 
-local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/latest/download/main.lua"))()
-
+-- SERVICES
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local player = Players.LocalPlayer
+local char = player.Character or player.CharacterAdded:Wait()
 
--- WINDOW
-local Window = WindUI:CreateWindow({
-    Title = "BRAX GANTENG",
-    Size = UDim2.fromOffset(500,350)
-})
+-- REMOTES
+local Events = ReplicatedStorage:WaitForChild("Events")
+local BuyRemote = Events:WaitForChild("PurchaseJump")
+local RebirthRemote = Events:WaitForChild("RequestRebirth")
 
--- TAB
-local Tab = Window:Tab({
-    Title = "Main"
-})
-
--- BASE COORDS
-local bases = {
-Vector3.new(39.6971,6.5480,-29.1314),
-Vector3.new(94.8487,6.5480,-29.1314),
-Vector3.new(-117.7268,6.5480,-28.6801),
-Vector3.new(-67.5289,6.5480,-29.1314),
-Vector3.new(-12.9007,6.5480,-29.2923)
-}
-
-local running = false
-local playerBase
-
--- FLAGS
+-- GLOBALS
 _G.BuySpeed = false
 _G.Buyjump = false
 _G.AutoRebirth = false
+_G.AutoBrainrot = false
 
--- REMOTES
-local BuyRemote = ReplicatedStorage:WaitForChild("Events"):WaitForChild("PurchaseJump")
-local RebirthRemote = ReplicatedStorage:WaitForChild("Events"):WaitForChild("RequestRebirth")
+-- BRAINROT SETTINGS
+local COLLECT_MYTHICAL = false
+local COLLECT_SECRET = false
+local COLLECT_LEGENDARY = false
 
--- DETECT BASE
-local function DetectBase()
+local SPAWN_POS = Vector3.new(-9.3163, 2.9980, 23.8388)
+local MIN_Y = 2
+local MAX_Y = 5
 
-    local root = player.Character:WaitForChild("HumanoidRootPart")
+local collected = {}
 
-    local closest
-    local dist = math.huge
-
-    for _,pos in pairs(bases) do
-        local d = (root.Position - pos).Magnitude
-        if d < dist then
-            dist = d
-            closest = pos
-        end
-    end
-
-    playerBase = closest
-
-end
-
--- TELEPORT
-local function TP(pos)
-
-    local char = player.Character
-
-    if char and char:FindFirstChild("HumanoidRootPart") then
-        char.HumanoidRootPart.CFrame = CFrame.new(pos)
-    end
-
-end
-
--- EQUIP SLOT 2
-local function EquipBar2()
-
-    local char = player.Character
-    local backpack = player:WaitForChild("Backpack")
-
-    local tools = {}
-
-    for _,v in pairs(backpack:GetChildren()) do
-        if v:IsA("Tool") then
-            table.insert(tools,v)
-        end
-    end
-
-    if tools[2] then
-        tools[2].Parent = char
-    end
-
-end
-
--- AUTO PLACE
-local function AutoPlace()
-
-    local start = tick()
-
-    while tick() - start < 0.5 do
-
-        for _,v in pairs(workspace:GetDescendants()) do
-            if v:IsA("ProximityPrompt") then
-                fireproximityprompt(v)
-            end
-        end
-
-        task.wait(0.05)
-
-    end
-
-end
-
--- PICKUP
-local function Pickup()
-
-    for _,v in pairs(workspace:GetDescendants()) do
-        if v:IsA("ProximityPrompt") then
-            fireproximityprompt(v)
-        end
-    end
-
-end
-
--- =====================
--- DUPE
--- =====================
-
-Tab:Toggle({
-
-Title = "DUPEEEEEEEE",
-Default = false,
-
-Callback = function(Value)
-
-running = Value
-
-if Value then
-
-DetectBase()
+-- =========================
+-- AUTO BUY SPEED
+-- =========================
 
 task.spawn(function()
-
-TP(playerBase)
-task.wait(0.3)
-
-EquipBar2()
-task.wait(0.2)
-
-local char = player.Character
-if char and char:FindFirstChild("Humanoid") then
-char.Humanoid.Health = 0
-end
-
-task.wait(0.2)
-
-AutoPlace()
-
-player.CharacterAdded:Wait()
-task.wait(0.6)
-
-while running do
-
-TP(playerBase)
-task.wait(0.3)
-
-Pickup()
-task.wait(0.3)
-
-EquipBar2()
-task.wait(0.2)
-
-local char = player.Character
-if char and char:FindFirstChild("Humanoid") then
-char.Humanoid.Health = 0
-end
-
-task.wait(0.2)
-
-AutoPlace()
-
-player.CharacterAdded:Wait()
-task.wait(0.6)
-
-end
-
+    while task.wait(0.2) do
+        if _G.BuySpeed then
+            BuyRemote:FireServer("speed")
+        end
+    end
 end)
 
-end
-
-end
-
-})
-
--- =====================
--- AUTO BUY SPEED
--- =====================
-
-Tab:Toggle({
-Title = "Auto Buy Speed",
-Default = false,
-Callback = function(Value)
-_G.BuySpeed = Value
-end
-})
-
--- =====================
+-- =========================
 -- AUTO BUY JUMP
--- =====================
+-- =========================
 
-Tab:Toggle({
-Title = "Auto Buy Jump",
-Default = false,
-Callback = function(Value)
-_G.Buyjump = Value
-end
-})
+task.spawn(function()
+    while task.wait(0.5) do
+        if _G.Buyjump then
+            BuyRemote:FireServer("jump")
+        end
+    end
+end)
 
--- =====================
--- AUTO REBIRTH (AUTO TABLE)
--- =====================
+-- =========================
+-- AUTO REBIRTH
+-- =========================
 
 local function generateRebirthRequirements(maxLevel,startValue,step)
 
-local tbl = {}
+    local tbl = {}
 
-for i = 1,maxLevel do
-tbl[i] = startValue + (i-1)*step
-end
+    for i=1,maxLevel do
+        tbl[i] = startValue + (i-1)*step
+    end
 
-return tbl
+    return tbl
 
 end
 
@@ -240,67 +77,46 @@ local RebirthRequirements = generateRebirthRequirements(200,20,5)
 
 local function getRebirthLevel()
 
-local stats = player:FindFirstChild("leaderstats")
+    local stats = player:FindFirstChild("leaderstats")
 
-if stats and stats:FindFirstChild("Rebirth") then
-return stats.Rebirth.Value
-end
+    if stats and stats:FindFirstChild("Rebirth") then
+        return stats.Rebirth.Value
+    end
 
-return 0
-
-end
-
-local function getPlayerSpeed()
-
-local character = player.Character
-
-if character and character:FindFirstChild("Humanoid") then
-return character.Humanoid.WalkSpeed
-end
-
-return 0
+    return 0
 
 end
 
-Tab:Toggle({
-Title = "Auto Rebirth",
-Default = false,
-Callback = function(Value)
-_G.AutoRebirth = Value
-end
-})
+local function getSpeed()
 
--- =====================
--- MAIN LOOP
--- =====================
+    local character = player.Character
+
+    if character and character:FindFirstChild("Humanoid") then
+        return character.Humanoid.WalkSpeed
+    end
+
+    return 0
+
+end
 
 task.spawn(function()
 
-while task.wait(0.3) do
-
-if _G.BuySpeed then
-BuyRemote:FireServer("speed")
-end
-
-if _G.Buyjump then
-BuyRemote:FireServer("jump")
-end
+while task.wait(1) do
 
 if _G.AutoRebirth then
 
-local currentRebirth = getRebirthLevel()
-local required = RebirthRequirements[currentRebirth + 1]
+local current = getRebirthLevel()
+
+local required = RebirthRequirements[current+1]
 
 if required then
 
-local speed = getPlayerSpeed()
+local speed = getSpeed()
 
 if speed >= required then
 RebirthRemote:FireServer()
 end
 
-else
-task.wait(5)
 end
 
 end
@@ -308,3 +124,140 @@ end
 end
 
 end)
+
+-- =========================
+-- AUTO BRAINROT
+-- =========================
+
+local function getRootPart()
+
+    local char = player.Character
+
+    if char then
+        return char:FindFirstChild("HumanoidRootPart")
+    end
+
+end
+
+local function goToSpawn()
+
+    local root = getRootPart()
+
+    if root then
+        root.CFrame = CFrame.new(SPAWN_POS + Vector3.new(0,3,0))
+    end
+
+end
+
+local function getRarity(spawnedItem)
+
+    local infoGUI = spawnedItem:FindFirstChild("InfoGUI",true)
+    if not infoGUI then return nil end
+
+    local textLabels = infoGUI:FindFirstChild("TextLabels")
+    if not textLabels then return nil end
+
+    local rarityLabel = textLabels:FindFirstChild("Rarity")
+    if not rarityLabel then return nil end
+
+    return rarityLabel.Text
+
+end
+
+local function isValidItem(prompt)
+
+    local p2 = prompt.Parent and prompt.Parent.Parent
+
+    if not p2 or p2.Name ~= "SpawnedItem" then
+        return false
+    end
+
+    local pos = prompt.Parent.Position
+
+    if pos.Y < MIN_Y or pos.Y > MAX_Y then
+        return false
+    end
+
+    local rarity = getRarity(p2)
+
+    if not rarity then return false end
+
+    if rarity == "Mythical" and COLLECT_MYTHICAL then return true end
+    if rarity == "Secret" and COLLECT_SECRET then return true end
+    if rarity == "Legendary" and COLLECT_LEGENDARY then return true end
+
+    return false
+
+end
+
+task.spawn(function()
+
+while task.wait(0.3) do
+
+if _G.AutoBrainrot then
+
+local root = getRootPart()
+
+if not root then
+task.wait(1)
+goToSpawn()
+continue
+end
+
+local prompt = nil
+
+for _,v in ipairs(workspace:GetDescendants()) do
+
+if v:IsA("ProximityPrompt") and isValidItem(v) and not collected[v] then
+prompt = v
+break
+end
+
+end
+
+if prompt and prompt.Parent then
+
+collected[prompt] = true
+
+local pos = prompt.Parent.Position
+
+root.CFrame = CFrame.new(pos + Vector3.new(0,3,0))
+
+task.wait(0.4)
+
+fireproximityprompt(prompt)
+
+task.wait(0.4)
+
+goToSpawn()
+
+task.delay(2,function()
+collected[prompt] = nil
+end)
+
+end
+
+end
+
+end
+
+end)
+
+-- =========================
+-- SIMPLE CONTROL
+-- =========================
+
+print("RILZ HUB LOADED")
+
+print("Commands:")
+
+print("_G.BuySpeed = true")
+print("_G.Buyjump = true")
+print("_G.AutoRebirth = true")
+print("_G.AutoBrainrot = true")
+
+print("Select Brainrot:")
+
+print("COLLECT_MYTHICAL = true")
+print("COLLECT_SECRET = true")
+print("COLLECT_LEGENDARY = true")
