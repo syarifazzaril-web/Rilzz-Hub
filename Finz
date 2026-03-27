@@ -1,0 +1,68 @@
+repeat task.wait() until game:IsLoaded()
+
+pcall(function()
+    game.CoreGui:FindFirstChild("RILZ_HUB"):Destroy()
+end)
+
+-- RAYFIELD
+local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
+
+local remote = game:GetService("ReplicatedStorage").Remotes.Plot.UpgradeNPC
+local savedIDs = {}
+
+local Auto = false
+
+-- WINDOW
+local Window = Rayfield:CreateWindow({
+    Name = "RILZ HUB",
+    LoadingTitle = "Rilz Hub",
+    LoadingSubtitle = "Auto Upgrade NPC",
+    ConfigurationSaving = {
+        Enabled = false
+    }
+})
+
+-- TAB
+local MainTab = Window:CreateTab("Main", 4483362458)
+
+-- INFO
+MainTab:CreateParagraph({
+    Title = "Credit Rilz",
+    Content = "JIKA MENGGUNAKAN LEVEL UPP ON FITURNYA TERUS UP MANUAL NANTI KE UP SENDIRI"
+})
+
+-- TOGGLE
+MainTab:CreateToggle({
+    Name = "Level Upp",
+    CurrentValue = false,
+    Callback = function(Value)
+        Auto = Value
+    end
+})
+
+-- HOOK REMOTE
+local old
+old = hookmetamethod(game,"__namecall",newcclosure(function(self,...)
+
+    local args = {...}
+
+    if self == remote and getnamecallmethod() == "InvokeServer" and Auto then
+        
+        local id = args[1]
+
+        if id and not savedIDs[id] then
+            savedIDs[id] = true
+
+            task.spawn(function()
+                while Auto do
+                    remote:InvokeServer(id)
+                    task.wait(0)
+                end
+            end)
+
+        end
+
+    end
+
+    return old(self,...)
+end))
