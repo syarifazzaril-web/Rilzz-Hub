@@ -243,7 +243,7 @@ local RebirthRequirements = {
 [2] = 25,
 [3] = 30,
 [4] = 35,
-[5] = 40
+[5] = 50
 }
 
 local function getRebirthLevel()
@@ -276,7 +276,7 @@ end
 
 task.spawn(function()
 
-while task.wait(0.3) do
+while task.wait(0.03) do
 
 if _G.BuySpeed then
 BuyRemote:FireServer("speed")
