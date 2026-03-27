@@ -1,32 +1,32 @@
---// RILZ HUB BRAINROT LOOP FINAL
+--// RILZ HUB BRAINROT LOOP FINAL (WINDUI FIX)
 
 pcall(function()
     game.CoreGui:FindFirstChild("RILZ_HUB"):Destroy()
 end)
 
-local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
+local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/latest/download/main.lua"))()
 
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 
-local Window = Rayfield:CreateWindow({
-    Name = "BRAX GANTENG",
-    LoadingTitle = "LOADING",
-    LoadingSubtitle = "G DUPE G GACOR",
-    ConfigurationSaving = {Enabled = false}
+-- WINDOW
+local Window = WindUI:CreateWindow({
+    Title = "BRAX GANTENG",
+    Size = UDim2.fromOffset(500,350),
 })
 
-local Tab = Window:CreateTab("Main",4483362458)
+-- TAB
+local Tab = Window:Tab({
+    Title = "Main"
+})
 
--- BASE COORDS
+-- BASE
 local bases = {
-
 Vector3.new(39.6971,6.5480,-29.1314),
 Vector3.new(94.8487,6.5480,-29.1314),
 Vector3.new(-117.7268,6.5480,-28.6801),
 Vector3.new(-67.5289,6.5480,-29.1314),
 Vector3.new(-12.9007,6.5480,-29.2923)
-
 }
 
 local running = false
@@ -52,14 +52,12 @@ local function DetectBase()
 
 end
 
--- TELEPORT
+-- TP
 local function TP(pos)
-
     local char = player.Character
     if char and char:FindFirstChild("HumanoidRootPart") then
         char.HumanoidRootPart.CFrame = CFrame.new(pos)
     end
-
 end
 
 -- EQUIP SLOT 2
@@ -88,20 +86,17 @@ local function AutoPlace()
     local start = tick()
 
     while tick() - start < 0.5 do
-
         for _,v in pairs(workspace:GetDescendants()) do
             if v:IsA("ProximityPrompt") then
                 fireproximityprompt(v)
             end
         end
-
         task.wait(0.05)
-
     end
 
 end
 
--- PICKUP BRAINROT
+-- PICKUP
 local function Pickup()
 
     for _,v in pairs(workspace:GetDescendants()) do
@@ -112,85 +107,66 @@ local function Pickup()
 
 end
 
-Tab:CreateToggle({
+-- TOGGLE
+Tab:Toggle({
+    Title = "DUPEEEEEEEE",
+    Default = false,
+    Callback = function(Value)
 
-Name = "DUPEEEEEEEE",
-CurrentValue = false,
+        running = Value
 
-Callback = function(Value)
+        if Value then
 
-running = Value
+            DetectBase()
 
-if Value then
+            task.spawn(function()
 
-DetectBase()
+                TP(playerBase)
+                task.wait(0.3)
 
-task.spawn(function()
+                EquipBar2()
+                task.wait(0.2)
 
--- =====================
--- PUTARAN 1
--- =====================
+                local char = player.Character
+                if char and char:FindFirstChild("Humanoid") then
+                    char.Humanoid.Health = 0
+                end
 
-TP(playerBase)
+                task.wait(0.2)
 
-task.wait(0.3)
+                AutoPlace()
 
-EquipBar2()
+                player.CharacterAdded:Wait()
+                task.wait(0.6)
 
-task.wait(0.2)
+                while running do
 
-local char = player.Character
-if char and char:FindFirstChild("Humanoid") then
-char.Humanoid.Health = 0
-end
+                    TP(playerBase)
+                    task.wait(0.3)
 
-task.wait(0.2)
+                    Pickup()
+                    task.wait(0.3)
 
-AutoPlace()
+                    EquipBar2()
+                    task.wait(0.2)
 
-player.CharacterAdded:Wait()
+                    local char = player.Character
+                    if char and char:FindFirstChild("Humanoid") then
+                        char.Humanoid.Health = 0
+                    end
 
-task.wait(0.6)
+                    task.wait(0.2)
 
--- =====================
--- PUTARAN 2 (LOOP)
--- =====================
+                    AutoPlace()
 
-while running do
+                    player.CharacterAdded:Wait()
+                    task.wait(0.6)
 
-TP(playerBase)
+                end
 
-task.wait(0.3)
+            end)
 
-Pickup()
+        end
 
-task.wait(0.3)
-
-EquipBar2()
-
-task.wait(0.2)
-
--- reset
-local char = player.Character
-if char and char:FindFirstChild("Humanoid") then
-char.Humanoid.Health = 0
-end
-
--- delay kecil sebelum place
-task.wait(0.2)
-
-AutoPlace()
-
-player.CharacterAdded:Wait()
-
-task.wait(0.6)
-
-end
-
-end)
-
-end
-
-end
-
+    end
 })
