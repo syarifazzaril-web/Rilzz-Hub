@@ -15,8 +15,8 @@ local Auto = false
 -- WINDOW
 local Window = Rayfield:CreateWindow({
     Name = "RILZ HUB",
-    LoadingTitle = "Rilz Hub",
-    LoadingSubtitle = "Auto Upgrade NPC",
+    LoadingTitle = "BENTAR",
+    LoadingSubtitle = "Membuat..",
     ConfigurationSaving = {
         Enabled = false
     }
