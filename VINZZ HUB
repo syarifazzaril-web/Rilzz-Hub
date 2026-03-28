@@ -4,7 +4,7 @@ pcall(function()
     game.CoreGui:FindFirstChild("RILZ_HUB"):Destroy()
 end)
 
-local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
+local Rayfield = loadstring(game:HttpGet("htttps://sirius.menu/rayfield"))()
 
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
