@@ -1,4 +1,4 @@
-local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/latest/download/main.lua"))()
 
 -- // DATA & VARIABLES // --
 local Players = game:GetService("Players")
@@ -75,72 +75,70 @@ local function Reset()
     char.Humanoid.Health = 0
 end
 
--- // RAYFIELD SETUP // --
-local Window = Rayfield:CreateWindow({
-   Name = "BroX HUB",
-   LoadingTitle = "Loading...",
-   LoadingSubtitle = "by Xanders",
-   ConfigurationSaving = {
-      Enabled = true,
-      FolderName = "XandersHubConfig",
-      FileName = "MainConfig"
-   }
+-- // WINDUI SETUP // --
+local Window = WindUI:CreateWindow({
+    Title = "BroX HUB",
+    Icon = "layout-dashboard",
+    Author = "by Xanders",
+    Folder = "XandersHubConfig",
 })
 
-local MainTab = Window:CreateTab("Main", 4483362458) -- Icon Home
-
-MainTab:CreateToggle({
-   Name = "Dupe",
-   CurrentValue = false,
-   Flag = "BrainrotToggle",
-   Callback = function(Value)
-      running = Value
-      
-      if running then
-          task.spawn(function()
-              DetectBase()
-              
-              -- Putaran 1
-              TP()
-              task.wait(0.4)
-              EquipBar2()
-              task.wait(0.2)
-              Reset()
-              task.wait(0.15)
-              SpawnPrompt() -- PLACE
-              player.CharacterAdded:Wait()
-              task.wait(0.5)
-
-              -- Loop Utama
-              while running do
-                  if not running then break end
-                  TP()
-                  task.wait(0.4)
-                  SpawnPrompt() -- PICKUP
-                  task.wait(0.4)
-                  EquipBar2()
-                  task.wait(0.2)
-                  Reset()
-                  task.wait(0.15)
-                  SpawnPrompt() -- PLACE
-                  player.CharacterAdded:Wait()
-                  task.wait(0.5)
-              end
-          end)
-      end
-   end,
+local MainTab = Window:Tab({
+    Title = "Main",
+    Icon = "home",
 })
 
-MainTab:CreateButton({
-   Name = "Manual Reset",
-   Callback = function()
-      Reset()
-   end,
+MainTab:Toggle({
+    Title = "Dupe",
+    Value = false,
+    Callback = function(Value)
+        running = Value
+
+        if running then
+            task.spawn(function()
+                DetectBase()
+
+                -- Putaran 1
+                TP()
+                task.wait(0.4)
+                EquipBar2()
+                task.wait(0.2)
+                Reset()
+                task.wait(0.15)
+                SpawnPrompt() -- PLACE
+                player.CharacterAdded:Wait()
+                task.wait(0.5)
+
+                -- Loop Utama
+                while running do
+                    if not running then break end
+                    TP()
+                    task.wait(0.4)
+                    SpawnPrompt() -- PICKUP
+                    task.wait(0.4)
+                    EquipBar2()
+                    task.wait(0.2)
+                    Reset()
+                    task.wait(0.15)
+                    SpawnPrompt() -- PLACE
+                    player.CharacterAdded:Wait()
+                    task.wait(0.5)
+                end
+            end)
+        end
+    end,
 })
 
-Rayfield:Notify({
-   Title = "Success",
-   Content = "HaNz HUB Ready!",
-   Duration = 3,
-   Image = 4483362458,
+MainTab:Button({
+    Title = "Manual Reset",
+    Callback = function()
+        Reset()
+    end,
+})
+
+WindUI:Notify({
+    Title = "Success",
+    Content = "HaNz HUB Ready!",
+    Duration = 3,
+    Icon = "check-circle",
 })
