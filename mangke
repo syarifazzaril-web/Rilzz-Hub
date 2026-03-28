@@ -1,0 +1,146 @@
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+-- // DATA & VARIABLES // --
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local running = false
+
+local bases = {
+    Vector3.new(-108.25604248046875, 4.511882781982422, -32.35612106323242),
+    Vector3.new(-48.123863220214844, 4.511883735656738, -32.62914276123047),
+    Vector3.new(11.198102951049805, 4.51188325881958, -32.87617874145508),
+    Vector3.new(70.71929931640625, 4.5118842124938965, -33.170196533203125)
+}
+local playerBase
+
+-- // FUNGSI ASLI (TIDAK BERUBAH SEDIKITPUN) // --
+local function WaitCharacter()
+    local char = player.Character or player.CharacterAdded:Wait()
+    char:WaitForChild("Humanoid")
+    char:WaitForChild("HumanoidRootPart")
+    return char
+end
+
+local function DetectBase()
+    local char = WaitCharacter()
+    local root = char.HumanoidRootPart
+    local dist = math.huge
+    for _, pos in pairs(bases) do
+        local d = (root.Position - pos).Magnitude
+        if d < dist then dist = d playerBase = pos end
+    end
+end
+
+local function TP()
+    local char = WaitCharacter()
+    char.HumanoidRootPart.CFrame = CFrame.new(playerBase)
+end
+
+local function EquipBar2()
+    local char = WaitCharacter()
+    local backpack = player:WaitForChild("Backpack")
+    local tools = {}
+    for _, v in pairs(backpack:GetChildren()) do
+        if v:IsA("Tool") then table.insert(tools, v) end
+    end
+    if tools[2] then tools[2].Parent = char end
+end
+
+local function SpawnPrompt()
+    local char = WaitCharacter()
+    local hrp = char.HumanoidRootPart
+    local nearestPlot
+    local dist = math.huge
+    for _, plot in pairs(workspace:GetChildren()) do
+        if plot.Name:lower():find("plot") and plot:FindFirstChild("Floor1") then
+            local part = plot:FindFirstChildWhichIsA("BasePart")
+            if part then
+                local d = (hrp.Position - part.Position).Magnitude
+                if d < dist then dist = d nearestPlot = plot end
+            end
+        end
+    end
+    if nearestPlot then
+        for _, v in pairs(nearestPlot:GetDescendants()) do
+            if v:IsA("ProximityPrompt") and v.Parent.Name == "Spawn" then
+                for i = 1, 6 do fireproximityprompt(v, 1) task.wait(0.05) end
+                break
+            end
+        end
+    end
+end
+
+local function Reset()
+    local char = WaitCharacter()
+    char.Humanoid.Health = 0
+end
+
+-- // RAYFIELD SETUP // --
+local Window = Rayfield:CreateWindow({
+   Name = "HaNz HUB",
+   LoadingTitle = "Rilzzhub Loading...",
+   LoadingSubtitle = "by HaNz",
+   ConfigurationSaving = {
+      Enabled = true,
+      FolderName = "HaNzHubConfig",
+      FileName = "MainConfig"
+   }
+})
+
+local MainTab = Window:CreateTab("Main", 4483362458) -- Icon Home
+
+MainTab:CreateToggle({
+   Name = "Brainrot Loop",
+   CurrentValue = false,
+   Flag = "BrainrotToggle",
+   Callback = function(Value)
+      running = Value
+      
+      if running then
+          task.spawn(function()
+              DetectBase()
+              
+              -- Putaran 1
+              TP()
+              task.wait(0.4)
+              EquipBar2()
+              task.wait(0.2)
+              Reset()
+              task.wait(0.15)
+              SpawnPrompt() -- PLACE
+              player.CharacterAdded:Wait()
+              task.wait(0.5)
+
+              -- Loop Utama
+              while running do
+                  if not running then break end
+                  TP()
+                  task.wait(0.4)
+                  SpawnPrompt() -- PICKUP
+                  task.wait(0.4)
+                  EquipBar2()
+                  task.wait(0.2)
+                  Reset()
+                  task.wait(0.15)
+                  SpawnPrompt() -- PLACE
+                  player.CharacterAdded:Wait()
+                  task.wait(0.5)
+              end
+          end)
+      end
+   end,
+})
+
+MainTab:CreateButton({
+   Name = "Manual Reset",
+   Callback = function()
+      Reset()
+   end,
+})
+
+Rayfield:Notify({
+   Title = "Success",
+   Content = "HaNz HUB Ready!",
+   Duration = 3,
+   Image = 4483362458,
+})
