@@ -77,12 +77,12 @@ end
 
 -- // RAYFIELD SETUP // --
 local Window = Rayfield:CreateWindow({
-   Name = "HaNz HUB",
-   LoadingTitle = "Rilzzhub Loading...",
-   LoadingSubtitle = "by HaNz",
+   Name = "BroX HUB",
+   LoadingTitle = "Loading...",
+   LoadingSubtitle = "by Xanders",
    ConfigurationSaving = {
       Enabled = true,
-      FolderName = "HaNzHubConfig",
+      FolderName = "XandersHubConfig",
       FileName = "MainConfig"
    }
 })
@@ -90,7 +90,7 @@ local Window = Rayfield:CreateWindow({
 local MainTab = Window:CreateTab("Main", 4483362458) -- Icon Home
 
 MainTab:CreateToggle({
-   Name = "Brainrot Loop",
+   Name = "Dupe",
    CurrentValue = false,
    Flag = "BrainrotToggle",
    Callback = function(Value)
