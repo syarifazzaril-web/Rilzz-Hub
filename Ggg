@@ -1,0 +1,79 @@
+-- Load WindUI
+local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/latest/download/main.lua"))()
+
+-- Window
+local Window = WindUI:CreateWindow({
+    Title = "Brainrot Script",
+    SubTitle = "by script",
+    Icon = "zap",
+    Size = UDim2.fromOffset(580, 460),
+    Moveable = true,
+    Resizable = false,
+})
+
+-- 1 Tab
+local Tab = Window:Tab({
+    Title = "Main",
+    Icon = "settings",
+})
+
+-- Variables
+local _Buydemenge = false
+local _AutoUp = false
+local _autorebirth = false
+
+local RS = game:GetService("ReplicatedStorage"):WaitForChild("Remotes")
+
+-- Toggle 1 - Auto Buy Damage
+Tab:Toggle({
+    Title = "Auto Buy Damage",
+    Desc = "Auto beli upgrade Damage",
+    Value = false,
+    Callback = function(state)
+        _Buydemenge = state
+        if state then
+            task.spawn(function()
+                while _Buydemenge do
+                    RS:WaitForChild("BuyUpgradeEvent"):FireServer("Damage", 500)
+                    task.wait(0.001)
+                end
+            end)
+        end
+    end
+})
+
+-- Toggle 2 - Auto Upgrade Brainrot
+Tab:Toggle({
+    Title = "Auto Upgrade Brainrot",
+    Desc = "Auto upgrade Brainrot",
+    Value = false,
+    Callback = function(state)
+        _AutoUp = state
+        if state then
+            task.spawn(function()
+                while _AutoUp do
+                    RS:WaitForChild("UpgradeBrainrotEvent"):FireServer(1)
+                    task.wait(0.01)
+                end
+            end)
+        end
+    end
+})
+
+-- Toggle 3 - Auto Rebirth
+Tab:Toggle({
+    Title = "Auto Rebirth",
+    Desc = "Auto rebirth",
+    Value = false,
+    Callback = function(state)
+        _autorebirth = state
+        if state then
+            task.spawn(function()
+                while _autorebirth do
+                    RS:WaitForChild("RebirthEvent"):FireServer()
+                    task.wait(0.1)
+                end
+            end)
+        end
+    end
+})
