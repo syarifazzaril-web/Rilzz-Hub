@@ -2,7 +2,7 @@
 -- Owner: Rilzzz
 -- Project: HaNz HUB
 
-loadstring(game:HttpGet("htttps://raw.githubusercontent.com/syarifazzaril-web/Rilzz-Hub/refs/heads/main/Versi%20obfus"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/syarifazzaril-web/Rilzz-Hub/refs/heads/main/Versi%20obfus"))()
 task.wait(2)
 
 local lib = _G.RilzHub
