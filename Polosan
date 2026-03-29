@@ -8,6 +8,7 @@ task.wait(2)
 local lib = _G.RilzHub
 local Brainrot = lib:AddTab("SHRINK FOR BRAINROT")
 local GetStrong = lib:AddTab("GET STRONG FOR BRAINROT")
+local OpenSea = lib:AddTab("OPEN SEA FOR BRAINROT")
 
 -- ==========================================
 -- TAB 1: SHRINK FOR BRAINROT
@@ -48,4 +49,218 @@ lib:AddButton(GetStrong.scroll, "Force Rejoin", "Klik untuk masuk ulang server",
     local TeleportService = game:GetService("TeleportService")
     local Players = game:GetService("Players")
     TeleportService:Teleport(game.PlaceId, Players.LocalPlayer)
+end)
+
+-- ==========================================
+-- TAB 3: OPEN SEA FOR BRAINROT
+-- ==========================================
+
+-- Toggle: Auto Best Brainrot
+lib:AddToggle(OpenSea.scroll, "Auto Best Brainrot", "Otomatis ambil brainrot terbaik", false, function(Value)
+    _G.AutoBestBrainrot = Value
+    if Value then
+        task.spawn(function()
+            while _G.AutoBestBrainrot do
+                local Players = game:GetService("Players")
+                local hrp = Players.LocalPlayer.Character and Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+                local spawnedItems = game:GetService("Workspace"):FindFirstChild("SpawnedItems")
+
+                if not hrp then task.wait(1) continue end
+
+                if not spawnedItems or #spawnedItems:GetChildren() == 0 then
+                    warn("Tidak ada brainrot di map, menunggu...")
+                    task.wait(3)
+                    continue
+                end
+
+                local SPAWN = CFrame.new(648.9985961914062, 67.67033386230469, 343.83697509765625)
+
+                local function parseValue(text)
+                    text = text:gsub("%$", ""):gsub("/s", ""):gsub(" ", "")
+                    local num, suffix = text:match("([%d%.]+)([KMBTq]?)")
+                    if not num then return 0 end
+                    num = tonumber(num) or 0
+                    local multipliers = {K=1e3, M=1e6, B=1e9, T=1e12, q=1e15}
+                    return num * (multipliers[suffix] or 1)
+                end
+
+                local maxCarry = 1
+                local ok, carryFrame = pcall(function()
+                    return Players.LocalPlayer.PlayerGui.Windows.UpgradesShop.Container.ScrollingFrame:FindFirstChild("Carry")
+                end)
+                if ok and carryFrame then
+                    for _, obj in pairs(carryFrame:GetDescendants()) do
+                        if obj:IsA("TextLabel") then
+                            local num = obj.Text:match("Carry: (%d+)")
+                            if num then maxCarry = tonumber(num) break end
+                        end
+                    end
+                end
+                print("Max carry: " .. maxCarry)
+
+                local itemList = {}
+                for _, item in pairs(spawnedItems:GetChildren()) do
+                    local pp = item:FindFirstChild("PrimaryPart")
+                    if pp then
+                        local pb = pp:FindFirstChild("PickableBillboard")
+                        if pb then
+                            local cps = pb:FindFirstChild("CashPerSecond")
+                            if cps then
+                                table.insert(itemList, {item = item, value = parseValue(cps.Text), text = cps.Text})
+                            end
+                        end
+                    end
+                end
+
+                if #itemList == 0 then
+                    warn("Tidak ada brainrot valid ditemukan, menunggu...")
+                    task.wait(3)
+                    continue
+                end
+
+                table.sort(itemList, function(a, b) return a.value > b.value end)
+
+                local picked = 0
+                for _, data in pairs(itemList) do
+                    if not _G.AutoBestBrainrot then break end
+                    if picked >= maxCarry then break end
+                    local item = data.item
+                    local pp = item:FindFirstChild("PrimaryPart")
+                    if pp then
+                        local pos = pp.CFrame.Position
+                        hrp.CFrame = CFrame.new(pos.X, pos.Y + pp.Size.Y / 2 + 3, pos.Z)
+                        print("TP ke: " .. item.Name .. " | " .. data.text)
+                        task.wait(0.1)
+                        local prompt = pp:FindFirstChild("PickablePrompt")
+                        if prompt then
+                            fireproximityprompt(prompt)
+                            print("Pick: " .. item.Name)
+                            picked = picked + 1
+                        end
+                        task.wait(0.01)
+                    end
+                end
+
+                hrp.CFrame = SPAWN
+                print("Selesai! Total pick: " .. picked .. "/" .. maxCarry)
+                task.wait(2)
+            end
+        end)
+    end
+end)
+
+-- Toggle: Auto LuckBox
+lib:AddToggle(OpenSea.scroll, "Auto LuckBox", "Otomatis ambil luckyblock terbaik", false, function(Value)
+    _G.AutoLuckBox = Value
+    if Value then
+        task.spawn(function()
+            while _G.AutoLuckBox do
+                local Players = game:GetService("Players")
+                local hrp = Players.LocalPlayer.Character and Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+                local spawnedItems = game:GetService("Workspace"):FindFirstChild("SpawnedItems")
+
+                if not hrp then task.wait(1) continue end
+
+                if not spawnedItems then
+                    warn("SpawnedItems tidak ditemukan!")
+                    task.wait(3)
+                    continue
+                end
+
+                local SPAWN = CFrame.new(648.9985961914062, 67.67033386230469, 343.83697509765625)
+
+                local luckPriority = {
+                    mogging_luckyblock = 1,
+                    gliched_luckyblock = 2,
+                    lava_luckyblock = 3,
+                    freezy_luckyblock = 4,
+                    fairy_luckyblock = 5
+                }
+
+                local luckList = {}
+                for _, item in pairs(spawnedItems:GetChildren()) do
+                    if luckPriority[item.Name] then
+                        table.insert(luckList, {item = item, priority = luckPriority[item.Name]})
+                    end
+                end
+
+                if #luckList == 0 then
+                    warn("Tidak ada luckyblock, menunggu...")
+                    task.wait(3)
+                    continue
+                end
+
+                table.sort(luckList, function(a, b) return a.priority < b.priority end)
+
+                local best = luckList[1]
+                local item = best.item
+                local pp = item.PrimaryPart
+                if not pp then
+                    warn("PrimaryPart nil!")
+                    task.wait(2)
+                    continue
+                end
+
+                local pos = pp.CFrame.Position
+                hrp.CFrame = CFrame.new(pos.X, pos.Y + pp.Size.Y / 2 + 3, pos.Z)
+                print("TP ke: " .. item.Name)
+                task.wait(0.5)
+
+                local prompt = pp:FindFirstChild("PickablePrompt")
+                if prompt then
+                    fireproximityprompt(prompt)
+                    print("Pick: " .. item.Name)
+                    hrp.CFrame = SPAWN
+                    print("Balik ke spawn!")
+                else
+                    warn("Prompt tidak ditemukan!")
+                    hrp.CFrame = SPAWN
+                end
+
+                task.wait(2)
+            end
+        end)
+    end
+end)
+
+-- Toggle: Auto Collect
+lib:AddToggle(OpenSea.scroll, "Auto Collect", "Otomatis collect dari plot", false, function(Value)
+    _G.AutoCollectSea = Value
+    if Value then
+        task.spawn(function()
+            local player = game:GetService("Players").LocalPlayer
+            local hrp = player.Character and player.Character:WaitForChild("HumanoidRootPart")
+            local plots = game:GetService("Workspace"):FindFirstChild("Plots")
+
+            if not hrp then warn("HumanoidRootPart tidak ditemukan!") return end
+
+            -- Detect plot kamu
+            local myPlot = nil
+            for _, plot in pairs(plots:GetChildren()) do
+                for _, model in pairs(plot:GetChildren()) do
+                    if model:FindFirstChild(player.Name .. "_FloatingPlotSign") then
+                        myPlot = model
+                        break
+                    end
+                end
+                if myPlot then break end
+            end
+
+            if not myPlot then warn("Plot tidak ditemukan!") return end
+            print("Plot ditemukan!")
+
+            while _G.AutoCollectSea do
+                local count = 0
+                for _, obj in pairs(myPlot:GetDescendants()) do
+                    if obj.Name == "CollectionPad" and obj:IsA("BasePart") then
+                        firetouchinterest(hrp, obj, 0)
+                        firetouchinterest(hrp, obj, 1)
+                        count = count + 1
+                    end
+                end
+                print("Collected " .. count .. " pads!")
+                task.wait(30)
+            end
+        end)
+    end
 end)
