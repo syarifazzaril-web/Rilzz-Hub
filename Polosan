@@ -9,6 +9,7 @@ local lib = _G.RilzHub
 local Brainrot = lib:AddTab("SHRINK FOR BRAINROT")
 local GetStrong = lib:AddTab("GET STRONG FOR BRAINROT")
 local OpenSea = lib:AddTab("OPEN SEA FOR BRAINROT")
+local ShovelSnow = lib:AddTab("SHOVEL SNOW FOR BRAINROT")
 
 -- ==========================================
 -- TAB 1: SHRINK FOR BRAINROT
@@ -260,6 +261,51 @@ lib:AddToggle(OpenSea.scroll, "Auto Collect", "Otomatis collect dari plot", fals
                 end
                 print("Collected " .. count .. " pads!")
                 task.wait(30)
+            end
+        end)
+    end
+end)
+
+-- ==========================================
+-- TAB 4: SHOVEL SNOW FOR BRAINROT
+-- ==========================================
+local RS = game:GetService("ReplicatedStorage")
+local Remotes = RS:WaitForChild("Remotes")
+
+-- Toggle: Auto Buy Damage
+lib:AddToggle(ShovelSnow.scroll, "Auto Buy Damage", "Otomatis beli upgrade Damage", false, function(Value)
+    _G.AutoBuyDamage = Value
+    if Value then
+        task.spawn(function()
+            while _G.AutoBuyDamage do
+                Remotes:WaitForChild("BuyUpgradeEvent"):FireServer("Damage", 500)
+                task.wait(0.001)
+            end
+        end)
+    end
+end)
+
+-- Toggle: Auto Upgrade Brainrot
+lib:AddToggle(ShovelSnow.scroll, "Auto Upgrade Brainrot", "Otomatis upgrade brainrot", false, function(Value)
+    _G.AutoUpgradeBrainrot = Value
+    if Value then
+        task.spawn(function()
+            while _G.AutoUpgradeBrainrot do
+                Remotes:WaitForChild("UpgradeBrainrotEvent"):FireServer(1)
+                task.wait(0.01)
+            end
+        end)
+    end
+end)
+
+-- Toggle: Auto Rebirth
+lib:AddToggle(ShovelSnow.scroll, "Auto Rebirth", "Otomatis Rebirth", false, function(Value)
+    _G.AutoRebirthSnow = Value
+    if Value then
+        task.spawn(function()
+            while _G.AutoRebirthSnow do
+                Remotes:WaitForChild("RebirthEvent"):FireServer()
+                task.wait(0.1)
             end
         end)
     end
