@@ -15,7 +15,16 @@ task.wait(2)
 local lib = _G.RilzHub
 
 -- ==========================================
--- TAB 1: SHRINK FOR BRAINROT
+-- TAB 1: PULL LUCKY BLOCKS
+-- ==========================================
+if supportedGame == "PULL LUCKY BLOCKS" then
+    local LuckyBlocks = lib:AddTab("PULL Lucky blocks")
+    _G.LuckyBlocksTab = LuckyBlocks
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/syarifazzaril-web/Polosan-/refs/heads/main/Pull%20Lucky%20blocks"))()
+end
+
+-- ==========================================
+-- TAB 2: SHRINK FOR BRAINROT
 -- ==========================================
 if supportedGame == "SHRINK FOR BRAINROT" then
     local Brainrot = lib:AddTab("SHRINK FOR BRAINROT")
@@ -29,21 +38,21 @@ if supportedGame == "SHRINK FOR BRAINROT" then
 end
 
 -- ==========================================
--- TAB 2: GET STRONG FOR BRAINROT
+-- TAB 3: GET STRONG FOR BRAINROT
 -- ==========================================
 if supportedGame == "GET STRONG FOR BRAINROT" then
     loadstring(game:HttpGet("https://raw.githubusercontent.com/syarifazzaril-web/Polosan-/refs/heads/main/Get%20storng"))()
 end
 
 -- ==========================================
--- TAB 3: OPEN SEA FOR BRAINROT
+-- TAB 4: OPEN SEA FOR BRAINROT
 -- ==========================================
 if supportedGame == "OPEN SEA FOR BRAINROT" then
     loadstring(game:HttpGet("https://raw.githubusercontent.com/syarifazzaril-web/Polosan-/refs/heads/main/Open%20sea"))()
 end
 
 -- ==========================================
--- TAB 4: SHOVEL SNOW FOR BRAINROT
+-- TAB 5: SHOVEL SNOW FOR BRAINROT
 -- ==========================================
 if supportedGame == "SHOVEL SNOW FOR BRAINROT" then
     loadstring(game:HttpGet("https://raw.githubusercontent.com/syarifazzaril-web/Polosan-/refs/heads/main/Shovel%20snow"))()
