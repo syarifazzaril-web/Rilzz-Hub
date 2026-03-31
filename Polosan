@@ -9,7 +9,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/syarifazzaril-web/Pol
 if not _G.SupportedGame then return end
 local supportedGame = _G.SupportedGame
 
-loadstring(game:HttpGet("https://raw.githubusercontent.com/syarifazzaril-web/Rilzz-Hub/refs/heads/main/Versi%20obfus"))()
+loadstring(game:HttpGet("htttps://raw.githubusercontent.com/syarifazzaril-web/Rilzz-Hub/refs/heads/main/Versi%20obfus"))()
 task.wait(2)
 
 local lib = _G.RilzHub
@@ -63,4 +63,11 @@ end
 -- ==========================================
 if supportedGame == "BEA A BRAINROT" then
     loadstring(game:HttpGet("https://raw.githubusercontent.com/syarifazzaril-web/Polosan-/refs/heads/main/Be%20a%20brainrot"))()
+end
+
+-- ==========================================
+-- TAB 7: +1 BE A LUCKY BLOCKS
+-- ==========================================
+if supportedGame == "+1 BE A LUCKY BLOCKS" then
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/syarifazzaril-web/Polosan-/refs/heads/main/%2B1%20Be%20a%20luck%20blocks"))()
 end
