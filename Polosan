@@ -9,7 +9,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/syarifazzaril-web/Pol
 if not _G.SupportedGame then return end
 local supportedGame = _G.SupportedGame
 
-loadstring(game:HttpGet("https://raw.githubusercontent.com/syarifazzaril-web/Rilzz-Hub/refs/heads/main/Versi%20obfus"))()
+loadstring(game:HttpGet("htttps://raw.githubusercontent.com/syarifazzaril-web/Rilzz-Hub/refs/heads/main/Versi%20obfus"))()
 task.wait(2)
 
 local lib = _G.RilzHub
