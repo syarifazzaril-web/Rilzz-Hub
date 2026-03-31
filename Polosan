@@ -57,3 +57,10 @@ end
 if supportedGame == "SHOVEL SNOW FOR BRAINROT" then
     loadstring(game:HttpGet("https://raw.githubusercontent.com/syarifazzaril-web/Polosan-/refs/heads/main/Shovel%20snow"))()
 end
+
+-- ==========================================
+-- TAB 6: BEA A BRAINROT
+-- ==========================================
+if supportedGame == "BEA A BRAINROT" then
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/syarifazzaril-web/Polosan-/refs/heads/main/Be%20a%20brainrot"))()
+end
