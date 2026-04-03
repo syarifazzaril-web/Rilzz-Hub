@@ -1,0 +1,73 @@
+-- GUI
+local gui = Instance.new("ScreenGui")
+gui.Parent = game.CoreGui
+gui.ResetOnSpawn = false
+
+local frame = Instance.new("Frame")
+frame.Parent = gui
+frame.Size = UDim2.new(0,220,0,120)
+frame.Position = UDim2.new(0.5,-110,0.5,-60)
+frame.BackgroundColor3 = Color3.fromRGB(255,0,0)
+frame.BorderSizePixel = 0
+frame.Active = true
+frame.Draggable = true
+
+local corner = Instance.new("UICorner",frame)
+corner.CornerRadius = UDim.new(0,10)
+
+local button = Instance.new("TextButton")
+button.Parent = frame
+button.Size = UDim2.new(0,140,0,55)
+button.Position = UDim2.new(0.5,-70,0.5,-27)
+button.BackgroundColor3 = Color3.fromRGB(255,255,255)
+button.BackgroundTransparency = 0.35
+button.Text = "RESET"
+button.TextScaled = true
+button.TextColor3 = Color3.fromRGB(0,0,0)
+button.BorderSizePixel = 0
+
+local corner2 = Instance.new("UICorner",button)
+corner2.CornerRadius = UDim.new(0,8)
+
+-- JALANKAN FITUR (PERSIS SEPERTI YANG KAMU KIRIM)
+button.MouseButton1Click:Connect(function()
+
+repeat task.wait() until game:IsLoaded()
+
+local player = game.Players.LocalPlayer
+
+-- RESET
+local char = player.Character
+if char then
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    if hum then
+        hum.Health = 0
+    end
+end
+
+-- LANGSUNG PLACE
+for i = 1,7 do
+    task.wait(0.3)
+
+    local char = player.Character
+    if not char then continue end
+
+    local hrp = char:FindFirstChild("HumanoidRootPart")
+    if not hrp then continue end
+
+    for _,v in pairs(workspace:GetDescendants()) do
+        if v:IsA("ProximityPrompt") then
+            local parent = v.Parent
+            if parent and parent:IsA("BasePart") then
+                local dist = (hrp.Position - parent.Position).Magnitude
+                
+                if dist <= 10 then
+                    fireproximityprompt(v)
+                    return
+                end
+            end
+        end
+    end
+end
+
+end)
